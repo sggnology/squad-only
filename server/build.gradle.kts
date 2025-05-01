@@ -48,3 +48,13 @@ allOpen {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+// build.gradle.kts 예시
+tasks.register<Copy>("copyReactBuild") {
+    from("../client/dist") // frontend 프로젝트의 위치
+    into("src/main/resources/static")
+}
+
+tasks.named("processResources") {
+    dependsOn("copyReactBuild")
+}
