@@ -6,7 +6,7 @@ const theme = createTheme({
       main: '#1976d2', // Default blue color
     },
     secondary: {
-      main: '#dc004e', // Default pink color
+      main: '#ebebeb', // Default grey color
     },
   },
   typography: {
