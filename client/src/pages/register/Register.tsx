@@ -6,6 +6,7 @@ const Register: React.FC = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
@@ -110,6 +111,15 @@ const Register: React.FC = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
+          />
+        </FormControl>
+
+        <FormControl margin="normal">
+          <TextField
+            fullWidth
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </FormControl>
 
