@@ -1,8 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 
-const NotFound: React.FC = () => {
+function NotFound() {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
@@ -22,6 +21,6 @@ const NotFound: React.FC = () => {
       </Button>
     </div>
   );
-};
+}
 
 export default NotFound;

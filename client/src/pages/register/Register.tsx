@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Button, Chip, Box, FormControl, FormGroup, InputLabel, OutlinedInput } from '@mui/material';
+import { TextField, Button, Chip, Box, FormControl, FormGroup } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const Register: React.FC = () => {
+function Register() {
   const [imageUrl, setImageUrl] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -166,6 +166,6 @@ const Register: React.FC = () => {
       </FormGroup>
     </Box>
   );
-};
+}
 
 export default Register;
