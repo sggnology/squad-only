@@ -68,8 +68,7 @@ button {
 button:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+button:focus, a:focus {
   outline: none !important;
   box-shadow: none !important;
 }
