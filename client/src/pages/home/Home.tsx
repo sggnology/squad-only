@@ -16,7 +16,6 @@ function Home() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const teamName = "SquadOnly Team"; // Example team name
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -56,9 +55,6 @@ function Home() {
 
   return (
     <>
-      <div className="home-header">
-        <h1>{teamName}</h1>
-      </div>
       <div className="home-container">
         {content.map((item) => (
           <div
