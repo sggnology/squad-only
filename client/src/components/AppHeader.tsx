@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 
@@ -7,8 +6,11 @@ function AppHeader() {
 
   return (
     <AppBar position="fixed" sx={{ top: 0, left: 0, right: 0, zIndex: 1201, boxShadow: 3, height: '64px' }}>
-      <Toolbar sx={{ minHeight: '64px' }}>
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+      <Toolbar sx={{ minHeight: '64px', display: 'flex', justifyContent: 'space-between' }}>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+          {/* Left-aligned content can go here */}
+        </Box>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
           <Typography
             variant="h6"
             component="div"
@@ -18,9 +20,11 @@ function AppHeader() {
             SquadOnly
           </Typography>
         </Box>
-        <Button color="inherit" onClick={() => navigate('/mypage')}>
-          My Profile
-        </Button>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button color="inherit" onClick={() => navigate('/mypage')}>
+            My Profile
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
