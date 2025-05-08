@@ -11,16 +11,20 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <div className="app-container">
-        <AppHeader />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/detail/:id" element={<Detail />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <div style={{ flexShrink: 0 }}>
+          <AppHeader />
+        </div>
+        <div style={{ flexGrow: 1, paddingTop: '64px' }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/detail/:id" element={<Detail />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
