@@ -28,9 +28,18 @@ function Detail() {
     <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px' }}>
       <h1>{content.title}</h1>
       <img src={content.image} alt={content.title} style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
+      {content.tags.length > 0 && (
+        <div style={{ marginBottom: '20px' }}>
+          {content.tags.map((tag, index) => (
+            <span key={index} style={{ marginRight: '10px', padding: '5px', backgroundColor: '#e0e0e0', borderRadius: '5px' }}>
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      {content.description && <p><strong>Description:</strong> {content.description}</p>}
       <p><strong>Location:</strong> {content.location}</p>
       <p><strong>Created At:</strong> {content.createdAt}</p>
-      <p><strong>Tags:</strong> {content.tags.join(', ')}</p>
     </div>
   );
 }
