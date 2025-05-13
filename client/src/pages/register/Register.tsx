@@ -64,6 +64,8 @@ function Register() {
       tags,
     };
 
+    console.log('Submitted data:', data);
+
     navigate('/');
   };
 
