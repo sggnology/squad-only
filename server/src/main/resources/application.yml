@@ -7,3 +7,12 @@ spring:
     url: jdbc:postgresql://localhost:23306/squad_only
     username: postgres
     password: root
+  jpa:
+    # data.sql 실행 활성화 (Spring Boot 2.5 이상 필요)
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update # 테이블이 없으면 생성하고, 변경사항이 있으면 업데이트
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
