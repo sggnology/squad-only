@@ -1,14 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
+import { ErrorProvider } from './contexts/ErrorContext.tsx';
+import ErrorDisplay from './components/ErrorDisplay/ErrorDisplay.tsx';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <App />
+      <ErrorProvider>
+        <App />
+        <ErrorDisplay />
+      </ErrorProvider>
     </ThemeProvider>
-  </StrictMode>,
-)
+  </React.StrictMode>
+);
