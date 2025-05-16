@@ -17,15 +17,4 @@ class ContentTagInfo(
     @ManyToOne(fetch = FetchType.LAZY) // Use LAZY fetch type usually
     @JoinColumn(name = "tag_idx", nullable = false)
     val tag: TagInfo, // Non-nullable reference
-) : BaseTimeEntity() {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ContentTagInfo) return false
-        return idx == other.idx
-    }
-
-    override fun hashCode(): Int {
-        return if(idx == 0L) return 0 else idx.hashCode()
-    }
-}
+) : BaseTimeEntity()
