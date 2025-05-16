@@ -12,7 +12,7 @@ class SpaController {
      *
      * @return "forward:/index.html" 뷰 이름
      */
-    @GetMapping(value = ["/", "/{path:^(?!api|assets)[^.]*}/**"])
+    @GetMapping(value = ["/", "/{path:^(?!api|assets|swagger-ui)[^.]*}/**"])
     fun forwardToIndex(): String {
         return "forward:/index.html"
     }
