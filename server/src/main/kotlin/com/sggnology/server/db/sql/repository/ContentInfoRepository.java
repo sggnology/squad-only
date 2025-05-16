@@ -1,8 +1,9 @@
 package com.sggnology.server.db.sql.repository;
 
 import com.sggnology.server.db.sql.entity.ContentInfo;
-import com.sggnology.server.db.sql.entity.UserInfo;
+import com.sggnology.server.feature.content.inquiry.db.base.ContentInquiryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContentInfoRepository extends JpaRepository<ContentInfo, Long> {
+public interface ContentInfoRepository
+        extends JpaRepository<ContentInfo, Long>, ContentInquiryRepository {
 }
