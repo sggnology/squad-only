@@ -19,7 +19,7 @@ class ContentInfo(
     var isDeleted: Boolean = false,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "registered_user_idx", nullable = false)
+    @JoinColumn(name = "registered_user_idx", nullable = true)
     val registeredUser: UserInfo? = null, // Non-nullable reference
 
     @OneToMany(mappedBy = "content", cascade = [CascadeType.ALL], orphanRemoval = true)
