@@ -1,7 +1,6 @@
-package com.sggnology.server.db.sql.repository;
+package com.sggnology.server.db.sql.repository
 
-import com.sggnology.server.db.sql.entity.UserInfo;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.sggnology.server.db.sql.entity.ConfigInfo
+import org.springframework.data.jpa.repository.JpaRepository
 
-public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
-}
+interface UserInfoRepository : JpaRepository<ConfigInfo, Long>
