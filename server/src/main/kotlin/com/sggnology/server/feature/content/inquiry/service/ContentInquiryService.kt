@@ -12,7 +12,7 @@ class ContentInquiryService(
     private val contentInfoRepository: ContentInfoRepository
 ) {
 
-    fun inquireContents(
+    fun execute(
         page: Int,
         size: Int
     ): Page<ContentInquiryResDto> {
