@@ -1,4 +1,4 @@
-package com.sggnology.server.feature.content.inquiry.db.base
+package com.sggnology.server.feature.content.inquiry.db
 
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
 import org.springframework.data.domain.Page

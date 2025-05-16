@@ -5,13 +5,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import com.sggnology.server.db.sql.entity.QContentInfo
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
 import com.sggnology.server.feature.content.inquiry.data.dto.QContentInquiryResDto
-import com.sggnology.server.feature.content.inquiry.db.base.ContentInquiryRepository
+import com.sggnology.server.feature.content.inquiry.db.ContentInquiryRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.stereotype.Repository
 
-@Repository
 class ContentInquiryRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : ContentInquiryRepository {
@@ -39,10 +37,6 @@ class ContentInquiryRepositoryImpl(
             .limit(pageable.pageSize.toLong())
             .fetch()
 
-        content.forEach {
-            it.tags.addAll(listOf("tag1", "tag2"))
-        }
-
         val total: Long = queryFactory
             .select(contentInfo.count())
             .from(contentInfo)
@@ -50,6 +44,10 @@ class ContentInquiryRepositoryImpl(
                 contentInfo.isDeleted.eq(false)
             )
             .fetchOne() ?: 0L
+
+        content.forEach {
+            it.tags.addAll(listOf("tag1", "tag2"))
+        }
 
         return PageImpl(content, pageable, total)
     }
