@@ -1,0 +1,3 @@
+file:
+  temp-dir: /tmp/uploads/temp
+  storage-dir: /data/uploads/storage
