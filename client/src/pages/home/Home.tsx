@@ -5,6 +5,15 @@ import axiosInstance from '../../utils/axiosInstance';
 import './Home.css';
 import { formatDateTime } from '../../utils/DateUtil';
 
+interface ContentResponseData {
+  idx: number;
+  fileIds: number[];
+  title: string;
+  tags: string[];
+  location: string;
+  createdAt: string;
+}
+
 interface Content {
   idx: number;
   imageUrl: string;
@@ -12,6 +21,18 @@ interface Content {
   tags: string[];
   location: string;
   createdAt: string;
+}
+
+interface Page {
+  number: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+interface PageContent {
+  content: ContentResponseData[];
+  page: Page;
 }
 
 function Home() {
@@ -31,21 +52,26 @@ function Home() {
       try {
         // Use axiosInstance and adjust the path if baseURL is set
         // If baseURL is '/api', then the path here should be '/v1/content'
-        const res = await axiosInstance.get('/content', {
+        const res = await axiosInstance.get<PageContent>('/content', {
           params: { page, size },
         });
         // Type assertion for Spring pageable response
-        const responseData = res.data as { content: Content[]; last: boolean };
-        const newData = {
-          content: responseData.content.map((item: Content) => ({
-            ...item,
-            createdAt: formatDateTime(item.createdAt), // Format date
-          })),
-          last: responseData.last,
-        };
-        
-        setContent((prev) => [...prev, ...newData.content]);
-        setLast(newData.last);
+        const responseData = res.data.content;
+        const responsePage = res.data.page;
+
+        const newContent: Content[] = responseData.map((item: ContentResponseData) => ({
+          idx: item.idx,
+          imageUrl: item.fileIds && item.fileIds.length > 0 ? `/api/v1/file/${item.fileIds[0]}` : 'https://placehold.co/400', // Fallback image URL
+          title: item.title,
+          tags: item.tags,
+          location: item.location,
+          createdAt: formatDateTime(item.createdAt),
+        }));
+
+        const isLast = responsePage.number === responsePage.totalPages - 1;
+
+        setContent((prev) => [...prev, ...newContent]);
+        setLast(isLast);
       } catch (e) {
         // The global error handler will display the error.
         // You can still have specific error handling here if needed.
