@@ -5,6 +5,7 @@ import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDt
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.web.PagedModel
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,7 +16,7 @@ class ContentInquiryService(
     fun execute(
         page: Int,
         size: Int
-    ): Page<ContentInquiryResDto> {
+    ): PagedModel<ContentInquiryResDto> {
 
         val pageInfo = PageRequest.of(
             page,
@@ -23,6 +24,19 @@ class ContentInquiryService(
             Sort.by(Sort.Direction.DESC, "createdAt")
         )
 
-        return contentInfoRepository.inquire(pageInfo)
+        val pagedResult = contentInfoRepository.inquire(pageInfo)
+        val formattedResult = pagedResult.map { eachContent ->
+            ContentInquiryResDto(
+                idx = eachContent.idx,
+                fileIds = eachContent.fileInfos.map { it.idx }.toMutableSet(),
+                title = eachContent.title,
+                location = eachContent.location,
+                description = eachContent.description,
+                createdAt = eachContent.createdAt,
+                tags = eachContent.contentTags.map { it.tag.name }.toMutableSet()
+            )
+        }
+
+        return PagedModel(formattedResult)
     }
 }

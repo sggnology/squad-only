@@ -1,16 +1,13 @@
 package com.sggnology.server.feature.content.inquiry.data.dto
 
-import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDateTime
 
-data class ContentInquiryResDto @QueryProjection constructor(
+data class ContentInquiryResDto(
     val idx: Long,
-    val imageUrl: String,
+    val fileIds: MutableSet<Long> = mutableSetOf(),
     val title: String,
     val location: String,
     val description: String,
-    val createdAt: LocalDateTime
-) {
-    // Querydsl 에서 Scalar Value 만 입력 가능하다.
-    val tags: MutableList<String> = mutableListOf()
-}
+    val createdAt: LocalDateTime,
+    val tags: MutableSet<String> = mutableSetOf()
+)
