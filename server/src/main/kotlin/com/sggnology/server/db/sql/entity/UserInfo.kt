@@ -21,7 +21,7 @@ class UserInfo(
     var isDeleted: Boolean = false,
 
     @OneToMany(mappedBy = "registeredUser", cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    val contents: MutableSet<ContentInfo> = mutableSetOf()
+    val contentInfos: MutableSet<ContentInfo> = mutableSetOf()
 ) : BaseTimeEntity() {
 
     override fun equals(other: Any?): Boolean {

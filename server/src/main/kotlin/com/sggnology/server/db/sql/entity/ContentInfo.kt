@@ -25,8 +25,8 @@ class ContentInfo(
     @OneToMany(mappedBy = "content", cascade = [CascadeType.ALL], orphanRemoval = true)
     val contentTags: MutableSet<ContentTagInfo> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "content", cascade = [CascadeType.PERSIST, CascadeType.MERGE]) // Example cascades
-    val resources: MutableSet<ResourceInfo> = mutableSetOf() // Use Set to avoid duplicates
+    @OneToMany(mappedBy = "contentInfo", cascade = [CascadeType.PERSIST, CascadeType.MERGE]) // Example cascades
+    val fileInfos: MutableSet<FileInfo> = mutableSetOf() // Use Set to avoid duplicates
 ) : BaseTimeEntity(){
 
     override fun equals(other: Any?): Boolean {
