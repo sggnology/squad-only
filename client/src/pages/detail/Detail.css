@@ -1,0 +1,27 @@
+.detail-title {
+  font-size: 2.5rem; /* 데스크톱 폰트 크기 (h2 정도) */
+  text-align: left; /* 데스크톱에서는 왼쪽 정렬 (예시) */
+  word-break: break-word;
+}
+
+.detail-image-container {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  /* 기본 스타일은 JS에서 설정한 값을 따르거나 여기서 오버라이드 가능 */
+}
+
+/* 모바일 화면 (예: 600px 이하) */
+@media (max-width: 600px) {
+  .detail-title {
+      font-size: 1.5rem; /* 데스크톱 폰트 크기 (h2 정도) */
+      text-align: center; /* 데스크톱에서는 왼쪽 정렬 (예시) */
+  }
+
+  .detail-image-container {
+    max-width: 250px;
+    /* 모바일 최대 너비 */
+    height: 250px;
+    /* 모바일 최대 높이 */
+  }
+}
