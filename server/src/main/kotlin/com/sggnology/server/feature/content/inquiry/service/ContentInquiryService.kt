@@ -2,7 +2,9 @@ package com.sggnology.server.feature.content.inquiry.service
 
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
-import org.springframework.data.domain.Page
+import com.sggnology.server.feature.content.inquiry.data.dto.ContentsInquiryResDto
+import com.sggnology.server.feature.content.inquiry.data.model.ContentInquiryModel
+import com.sggnology.server.feature.content.inquiry.data.model.ContentsInquiryModel
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PagedModel
@@ -13,29 +15,23 @@ class ContentInquiryService(
     private val contentInfoRepository: ContentInfoRepository
 ) {
 
-    fun execute(
-        page: Int,
-        size: Int
-    ): PagedModel<ContentInquiryResDto> {
+    fun execute(contentInquiryModel: ContentInquiryModel): ContentInquiryResDto {
+        val contentInfo = contentInfoRepository.findById(contentInquiryModel.idx)
+            .orElseThrow { IllegalArgumentException("컨텐츠를 찾을 수 없습니다. IDX: ${contentInquiryModel.idx}") }
+
+        return ContentInquiryResDto.fromContentInfo(contentInfo)
+    }
+
+    fun execute(contentsInquiryModel: ContentsInquiryModel): PagedModel<ContentsInquiryResDto> {
 
         val pageInfo = PageRequest.of(
-            page,
-            size,
+            contentsInquiryModel.page,
+            contentsInquiryModel.size,
             Sort.by(Sort.Direction.DESC, "createdAt")
         )
 
         val pagedResult = contentInfoRepository.inquire(pageInfo)
-        val formattedResult = pagedResult.map { eachContent ->
-            ContentInquiryResDto(
-                idx = eachContent.idx,
-                fileIds = eachContent.fileInfos.map { it.idx }.toMutableSet(),
-                title = eachContent.title,
-                location = eachContent.location,
-                description = eachContent.description,
-                createdAt = eachContent.createdAt,
-                tags = eachContent.contentTags.map { it.tag.name }.toMutableSet()
-            )
-        }
+        val formattedResult = pagedResult.map { ContentsInquiryResDto.fromContentInfo(it) }
 
         return PagedModel(formattedResult)
     }

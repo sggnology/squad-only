@@ -1,6 +1,9 @@
 package com.sggnology.server.endpoint.content
 
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
+import com.sggnology.server.feature.content.inquiry.data.dto.ContentsInquiryResDto
+import com.sggnology.server.feature.content.inquiry.data.model.ContentInquiryModel
+import com.sggnology.server.feature.content.inquiry.data.model.ContentsInquiryModel
 import com.sggnology.server.feature.content.inquiry.service.ContentInquiryService
 import com.sggnology.server.feature.content.registration.data.dto.ContentRegistrationReqDto
 import com.sggnology.server.feature.content.registration.service.ContentRegistrationService
@@ -21,17 +24,34 @@ class ContentController(
 ) {
 
     @Operation(
+        summary = "Get content",
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successfully retrieved content"),
+    ])
+    @GetMapping("/{idx}")
+    fun inquireContent(
+        @PathVariable("idx") idx: Long,
+    ): ContentInquiryResDto {
+        return contentInquiryService.execute(
+            ContentInquiryModel(idx = idx)
+        )
+    }
+
+    @Operation(
         summary = "Get paged contents",
     )
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successfully retrieved paged contents"),
     ])
     @GetMapping("")
-    fun inquire(
+    fun inquireContents(
         @RequestParam page: Int,
         @RequestParam size: Int
-    ): PagedModel<ContentInquiryResDto> {
-        return contentInquiryService.execute(page, size)
+    ): PagedModel<ContentsInquiryResDto> {
+        return contentInquiryService.execute(
+            ContentsInquiryModel(page = page, size = size)
+        )
     }
 
     @Operation(
