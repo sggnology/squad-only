@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { TextField, Button, Chip, Box, FormControl, FormGroup } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../utils/axiosInstance'; // Import axiosInstance
+
+// Interface for the content registration request body
+interface ContentRegistrationReqDto {
+  newFileIds: number[];
+  title: string;
+  description: string;
+  location: string;
+  tags: string[];
+}
 
 function Register() {
-  const [imageUrl, setImageUrl] = useState('');
+  const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -15,35 +25,47 @@ function Register() {
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // 1. Local preview
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
 
+      // 2. Upload to server
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('files', file);
 
       try {
-        const response = await fetch('https://your-server.com/upload', {
-          method: 'POST',
-          body: formData,
+        const response = await axiosInstance.post('/file', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setImageUrl(data.url);
+        if (response.data && Array.isArray(response.data) && response.data.length > 0 && typeof response.data[0] === 'number') {
+          setUploadedFileId(response.data[0]);
         } else {
-          console.error('Failed to upload image');
+          console.error('Failed to upload image or invalid file ID received:', response.data);
+          setImagePreview(null);
+          setUploadedFileId(null);
         }
       } catch (error) {
         console.error('Error uploading image:', error);
+        setImagePreview(null);
+        setUploadedFileId(null);
       }
+    } else {
+      setImagePreview(null);
+      setUploadedFileId(null);
     }
   };
 
   const handleAddTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === ' ' && tagInput.trim() !== '') {
-      setTags((prevTags) => [...prevTags, tagInput.trim()]);
+      if (!tags.includes(tagInput.trim())) {
+        setTags((prevTags) => [...prevTags, tagInput.trim()]);
+      }
       setTagInput('');
+      event.preventDefault();
     }
   };
 
@@ -51,22 +73,31 @@ function Register() {
     setTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete));
   };
 
-  const handleSubmit = () => {
-    if (!title || !location) {
-      alert('Title and Location are required!');
+  const handleSubmit = async () => {
+    if (!title) {
+      alert('Title is required!');
+      return;
+    }
+    if (!location) {
+      alert('Location is required!');
       return;
     }
 
-    const data = {
-      imageUrl,
+    const payload: ContentRegistrationReqDto = {
+      newFileIds: uploadedFileId == null ? [] : [uploadedFileId],
       title,
+      description,
       location,
       tags,
     };
 
-    console.log('Submitted data:', data);
-
-    navigate('/');
+    try {
+      await axiosInstance.post('/content', payload);
+      console.log('Content registered successfully:', payload);
+      navigate('/');
+    } catch (error) {
+      console.error('Error registering content:', error);
+    }
   };
 
   return (
