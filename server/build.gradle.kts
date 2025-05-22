@@ -23,6 +23,7 @@ repositories {
 }
 
 val queryDslVersion = "5.0.0" // Use a compatible QueryDSL version
+val jjwtVersion = "0.12.5" // JWT 라이브러리 버전
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -30,6 +31,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    // Spring Security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    // JWT Dependencies
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
     // QueryDSL Dependencies
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta") // Use jakarta for Spring Boot 3+

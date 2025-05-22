@@ -20,9 +20,31 @@ class UserInfo(
 
     var isDeleted: Boolean = false,
 
+    @OneToMany(mappedBy = "userInfo", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    val userRoleInfos: MutableList<UserRoleInfo> = mutableListOf(),
+
     @OneToMany(mappedBy = "registeredUser", cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     val contentInfos: MutableSet<ContentInfo> = mutableSetOf()
 ) : BaseTimeEntity() {
+
+    // 편의 메서드: 역할 추가
+    fun addRole(roleInfo: RoleInfo) {
+        userRoleInfos.add(
+            UserRoleInfo(
+                userInfo = this,
+                roleInfo = roleInfo
+            )
+        )
+    }
+
+    fun deleteRole(roleInfo: RoleInfo) {
+        userRoleInfos.removeIf { it.roleInfo == roleInfo }
+    }
+
+    // 편의 메서드: 사용자의 권한 목록 가져오기
+    fun getRoleList(): List<String> {
+        return userRoleInfos.map { it.roleInfo.role }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
