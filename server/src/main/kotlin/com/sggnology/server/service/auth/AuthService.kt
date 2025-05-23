@@ -5,9 +5,7 @@ import com.sggnology.server.endpoint.auth.dto.req.AuthLoginReqDto
 import com.sggnology.server.endpoint.auth.dto.res.AuthLoginResDto
 import com.sggnology.server.security.JwtTokenProvider
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,13 +30,7 @@ class AuthService(
 
         val authorities = userInfo.getRoleList().map { SimpleGrantedAuthority(it) }
 
-        val token = jwtTokenProvider.createToken(
-            UsernamePasswordAuthenticationToken(
-                userInfo.userId,
-                "",
-                authorities
-            )
-        )
+        val token = jwtTokenProvider.createToken(userInfo.userId, authorities)
 
         return AuthLoginResDto(
             token = token,

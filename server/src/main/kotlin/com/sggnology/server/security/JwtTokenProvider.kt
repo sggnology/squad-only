@@ -1,6 +1,5 @@
 package com.sggnology.server.security
 
-import com.sggnology.server.security.JwtProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -22,14 +21,19 @@ class JwtTokenProvider(
         Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
     }
 
-    fun createToken(authentication: Authentication): String {
-        val authorities = authentication.authorities.joinToString(",") { it.authority }
+    fun createToken(userName: String, authorities: List<GrantedAuthority>): String {
+
+        val authentication = UsernamePasswordAuthenticationToken(
+            userName,
+            "",
+            authorities
+        )
 
         val validity = Date(Date().time + jwtProperties.expirationMs)
 
         return Jwts.builder()
             .subject(authentication.name)
-            .claim("auth", authorities)
+            .claim("auth", authentication.authorities.map { it.authority })
             .expiration(validity)
             .signWith(secretKey, Jwts.SIG.HS512)
             .compact()
@@ -38,10 +42,10 @@ class JwtTokenProvider(
     fun getAuthentication(token: String): Authentication {
         val claims = getClaims(token)
 
-        val authorities: Collection<GrantedAuthority> = claims["auth"].toString()
-            .split(",")
-            .filter { it.isNotEmpty() }
-            .map { SimpleGrantedAuthority(it) }
+        val authorities: List<GrantedAuthority> = (claims["auth"] as? List<*>)
+            ?.mapNotNull {
+                (it as? String)?.let { role -> SimpleGrantedAuthority(role) }
+            } ?: emptyList()
 
         val principal = User(claims.subject, "", authorities)
 
