@@ -22,8 +22,9 @@ repositories {
     mavenCentral()
 }
 
-val queryDslVersion = "5.0.0" // Use a compatible QueryDSL version
-val jjwtVersion = "0.12.5" // JWT 라이브러리 버전
+val queryDslVersion = "5.1.0" // Use a compatible QueryDSL version
+val jjwtVersion = "0.12.6" // JWT 라이브러리 버전
+val mockitoVersion = "5.17.0" // 사용하고자 하는 mockito 버전 설정
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -56,6 +57,11 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     runtimeOnly("org.postgresql:postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Mockito 의존성 추가
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
+    testImplementation("org.mockito:mockito-inline:$mockitoVersion")
 }
 
 kotlin {
