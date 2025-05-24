@@ -28,8 +28,13 @@ spring:
 #      max-request-size: 10MB
 
 jwt:
-  secret 'your-secret-key-should-be-at-least-64-bytes-for-security-best-practices'
-  expirationMs 86400000 // 24시간
-  refreshExpirationMs 604800000 // 7일
+  secret: 'your-secret-key-should-be-at-least-64-bytes-for-security-best-practices'
+  expirationMs: 86400000 # 24시간
+  refreshExpirationMs: 604800000 # 7일
 
-
+# 초기 관리자 계정 설정
+app:
+  admin:
+    username: admin
+    password: '2345'  # 실제 환경에서는 보안을 위해 환경 변수 등으로 관리하세요
+    name: squad-only
