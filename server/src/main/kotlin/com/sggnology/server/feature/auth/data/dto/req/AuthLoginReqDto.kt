@@ -1,4 +1,4 @@
-package com.sggnology.server.endpoint.auth.dto.req
+package com.sggnology.server.feature.auth.data.dto.req
 
 data class AuthLoginReqDto(
     val userId: String,

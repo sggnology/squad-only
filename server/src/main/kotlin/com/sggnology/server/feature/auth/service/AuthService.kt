@@ -1,8 +1,8 @@
-package com.sggnology.server.feature.auth
+package com.sggnology.server.feature.auth.service
 
 import com.sggnology.server.db.sql.repository.UserInfoRepository
-import com.sggnology.server.endpoint.auth.dto.req.AuthLoginReqDto
-import com.sggnology.server.endpoint.auth.dto.res.AuthLoginResDto
+import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
+import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
 import com.sggnology.server.security.JwtTokenProvider
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.authority.SimpleGrantedAuthority

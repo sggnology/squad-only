@@ -1,4 +1,4 @@
-package com.sggnology.server.endpoint.auth.dto.res
+package com.sggnology.server.feature.auth.data.dto.res
 
 data class AuthLoginResDto(
     val token: String,
