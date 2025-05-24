@@ -1,4 +1,4 @@
-package com.sggnology.server.service.auth
+package com.sggnology.server.feature.auth
 
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.endpoint.auth.dto.req.AuthLoginReqDto

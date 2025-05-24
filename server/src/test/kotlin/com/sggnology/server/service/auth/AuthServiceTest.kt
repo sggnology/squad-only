@@ -5,6 +5,7 @@ import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.entity.UserRoleInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.endpoint.auth.dto.req.AuthLoginReqDto
+import com.sggnology.server.feature.auth.AuthService
 import com.sggnology.server.security.JwtTokenProvider
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach

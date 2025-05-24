@@ -2,7 +2,7 @@ package com.sggnology.server.endpoint.auth
 
 import com.sggnology.server.endpoint.auth.dto.req.AuthLoginReqDto
 import com.sggnology.server.endpoint.auth.dto.res.AuthLoginResDto
-import com.sggnology.server.service.auth.AuthService
+import com.sggnology.server.feature.auth.AuthService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
