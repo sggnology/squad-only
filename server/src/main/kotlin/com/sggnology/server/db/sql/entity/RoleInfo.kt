@@ -10,7 +10,7 @@ class RoleInfo(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var idx: Long = 0,
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, unique = true)
     var role: String,
 
     @OneToMany(mappedBy = "roleInfo", cascade = [CascadeType.ALL], orphanRemoval = true)
