@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/api/v1/file")
+@RequestMapping("api/v1/file")
 @Tag(name = "File Management", description = "File management APIs")
 class FileController(
     private val fileDownloadService: FileDownloadService,
