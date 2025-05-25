@@ -53,6 +53,9 @@ class SecurityConfig(
                     // 로그인, 회원가입 등의 인증 관련 엔드포인트 허용
                     .requestMatchers("/api/v1/auth/**").permitAll()
 
+                    // 관리자 권한 필요
+                    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+
                     // 그 외 /api 경로는 인증 필요
                     .requestMatchers("/api/**").authenticated()
 
