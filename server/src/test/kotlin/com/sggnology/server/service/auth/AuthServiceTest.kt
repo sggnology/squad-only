@@ -5,6 +5,7 @@ import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.entity.UserRoleInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
+import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.feature.auth.service.AuthService
 import com.sggnology.server.security.JwtTokenProvider
 import org.junit.jupiter.api.Assertions.*
@@ -66,14 +67,14 @@ class AuthServiceTest {
     @Test
     fun `login should return LoginResponse with token when credentials are valid`() {
         // given
-        val loginRequest = AuthLoginReqDto("testUser", "password")
+        val loginRequestDto = AuthLoginReqDto("testUser", "password")
 
         `when`(userInfoRepository.findByUserId("testUser")).thenReturn(testUser)
         `when`(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true)
         `when`(jwtTokenProvider.createToken(eq("testUser"), anyList())).thenReturn("test-jwt-token")
 
         // when
-        val loginResponse = authService.execute(loginRequest)
+        val loginResponse = authService.execute(AuthLoginModel.fromAuthLoginReqDto(loginRequestDto))
 
         // then
         assertEquals("test-jwt-token", loginResponse.token)
@@ -96,7 +97,7 @@ class AuthServiceTest {
 
         // when & then
         assertThrows(BadCredentialsException::class.java) {
-            authService.execute(loginRequest)
+            authService.execute(AuthLoginModel.fromAuthLoginReqDto(loginRequest))
         }
 
         verify(userInfoRepository).findByUserId("nonExistentUser")
@@ -114,7 +115,7 @@ class AuthServiceTest {
 
         // when & then
         assertThrows(BadCredentialsException::class.java) {
-            authService.execute(loginRequest)
+            authService.execute(AuthLoginModel.fromAuthLoginReqDto(loginRequest))
         }
 
         verify(userInfoRepository).findByUserId("testUser")
