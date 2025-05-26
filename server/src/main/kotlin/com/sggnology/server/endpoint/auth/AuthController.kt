@@ -1,14 +1,18 @@
 package com.sggnology.server.endpoint.auth
 
+import com.sggnology.server.feature.auth.data.dto.req.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
+import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.feature.auth.service.AuthService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -29,7 +33,25 @@ class AuthController(
     fun login(
         @RequestBody authLoginReqDto: AuthLoginReqDto
     ): AuthLoginResDto {
-        val loginResponse = authService.execute(authLoginReqDto)
+        val loginResponse = authService.execute(
+            AuthLoginModel.fromAuthLoginReqDto(authLoginReqDto)
+        )
+        return loginResponse
+    }
+
+    @Operation(
+        summary = "토큰을 기반으로 인증 정보 확인"
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "인증 성공", useReturnTypeSchema = true),
+    ])
+    @GetMapping("/me")
+    fun identifyMe(
+        @RequestHeader("Authorization") authorizationHeader: String,
+    ): AuthLoginResDto {
+        val loginResponse = authService.execute(
+            AuthIdentifyMeModel.fromAuthorizationHeader(authorizationHeader)
+        )
         return loginResponse
     }
 }
