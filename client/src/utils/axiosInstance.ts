@@ -6,6 +6,21 @@ const axiosInstance = axios.create({
   // You can add other default configurations here, like headers or timeout
 });
 
+// Request interceptor to add auth token to headers
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // localStorage에서 토큰을 가져와서 헤더에 추가
+    const token = localStorage.getItem('token');
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -23,6 +38,15 @@ axiosInstance.interceptors.response.use(
         // Try to get a more specific message from the server response
         errorMessage = error.response.data?.message || error.response.data?.error || error.message;
         console.error('API Error:', error.response.data, 'Status:', errorStatus);
+        
+        // TODO: 만약 401 Unauthorized 에러가 발생하면 로그아웃 처리하고 있어 추후 확인해보아야 한다.
+        // 401 Unauthorized 에러 시 로그아웃 처리
+        if (errorStatus === 401) {
+          // 토큰이 만료되었거나 유효하지 않은 경우만 로그아웃
+          // Redux store의 logout action을 디스패치하는 custom event 발생
+          const logoutEvent = new CustomEvent('unauthorized');
+          window.dispatchEvent(logoutEvent);
+        }
       } else if (error.request) {
         // The request was made but no response was received
         errorMessage = 'No response received from server. Please check your network connection.';
