@@ -6,14 +6,18 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import { ErrorProvider } from './contexts/ErrorContext.tsx';
 import ErrorDisplay from './components/ErrorDisplay/ErrorDisplay.tsx';
+import { Provider } from 'react-redux';
+import { store } from './store/index.ts';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <ErrorProvider>
-        <App />
-        <ErrorDisplay />
-      </ErrorProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <ErrorProvider>
+          <App />
+          <ErrorDisplay />
+        </ErrorProvider>
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>
 );
