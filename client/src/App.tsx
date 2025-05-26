@@ -11,13 +11,24 @@ import AppHeader from './components/AppHeader';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import { useAppDispatch } from './store/hooks';
-import { logoutAsync } from './store/authSlice';
+import { logoutAsync, validateTokenAsync } from './store/authSlice';
 import './App.css';
 
 function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // 앱 초기화 시 저장된 토큰이 있으면 유효성 검증
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        console.log('Found stored token, validating...');
+        await dispatch(validateTokenAsync(token));
+      }
+    };
+
+    initializeAuth();
+
     // 401 Unauthorized 이벤트 리스너 등록
     const handleUnauthorized = () => {
       dispatch(logoutAsync());

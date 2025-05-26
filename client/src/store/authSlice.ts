@@ -62,19 +62,52 @@ export const logoutAsync = createAsyncThunk(
   }
 );
 
+// 토큰 유효성 검증 및 사용자 정보 복원
+export const validateTokenAsync = createAsyncThunk<LoginResponse, string>(
+  'auth/validateToken',
+  async (token, { rejectWithValue }) => {
+    try {
+      // /auth/me 엔드포인트를 호출하여 토큰 유효성 검증 및 사용자 정보 조회
+      const response = await axiosInstance.get<LoginResponse>('/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      return response.data;
+    } catch (error: any) {
+      // 토큰이 유효하지 않으면 localStorage에서 제거
+      localStorage.removeItem('token');
+      return rejectWithValue(
+        error.response?.data?.message || 'Token validation failed'
+      );
+    }
+  }
+);
+
 // Auth slice
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
-  reducers: {
+  initialState,  reducers: {
     clearError: (state) => {
       state.error = null;
     },
-    // 토큰이 있을 때 사용자 정보를 복원하는 리듀서
+    // 토큰과 사용자 정보를 직접 설정 (API 호출 없이 빠른 복원용)
     setAuthenticated: (state, action: PayloadAction<{ user: User; token: string }>) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      state.loading = false;
+      state.error = null;
+    },
+    // 인증 초기화 (로그아웃 시 사용)
+    clearAuthentication: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
+      localStorage.removeItem('token');
     },
   },
   extraReducers: (builder) => {
@@ -111,8 +144,7 @@ const authSlice = createSlice({
         
         // 실패 시 localStorage에서 토큰 제거
         localStorage.removeItem('token');
-      })
-      // Logout
+      })      // Logout
       .addCase(logoutAsync.fulfilled, (state) => {
         console.log('Logout successful');
         state.user = null;
@@ -122,11 +154,41 @@ const authSlice = createSlice({
         
         // localStorage에서 토큰 제거
         localStorage.removeItem('token');
+      })
+      // Validate Token
+      .addCase(validateTokenAsync.pending, (state) => {
+        console.log('Token validation started');
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(validateTokenAsync.fulfilled, (state, action) => {
+        console.log('Token validation successful:', action.payload);
+        state.loading = false;
+        state.isAuthenticated = true;
+        // 기존 토큰을 유지 (validateTokenAsync에 전달된 토큰이 유효한 토큰)
+        state.user = {
+          userId: action.payload.userId,
+          name: action.payload.name,
+          nickname: action.payload.nickname,
+          roles: action.payload.roles,
+        };
+        state.error = null;
+      })
+      .addCase(validateTokenAsync.rejected, (state, action) => {
+        console.error('Token validation failed:', action.payload);
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.error = null; // 토큰 검증 실패는 에러로 표시하지 않음
+        
+        // 실패 시 localStorage에서 토큰 제거
+        localStorage.removeItem('token');
       });
   },
 });
 
-export const { clearError, setAuthenticated } = authSlice.actions;
+export const { clearError, setAuthenticated, clearAuthentication } = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state: { auth: AuthState }) => state.auth;
