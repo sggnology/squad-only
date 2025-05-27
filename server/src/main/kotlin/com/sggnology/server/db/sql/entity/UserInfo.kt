@@ -2,6 +2,7 @@ package com.sggnology.server.db.sql.entity
 
 import com.sggnology.server.db.sql.base.BaseTimeEntity
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "user_info")
@@ -18,7 +19,11 @@ class UserInfo(
 
     var nickname: String?,
 
+    var isEnabled: Boolean = true,
+
     var isDeleted: Boolean = false,
+
+    var lastLoginAt: LocalDateTime? = null,
 
     @OneToMany(mappedBy = "userInfo", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val userRoleInfos: MutableList<UserRoleInfo> = mutableListOf(),
@@ -27,7 +32,7 @@ class UserInfo(
     val contentInfos: MutableSet<ContentInfo> = mutableSetOf()
 ) : BaseTimeEntity() {
 
-    // 편의 메서드: 역할 추가
+    // 역할 추가
     fun addRole(roleInfo: RoleInfo) {
         userRoleInfos.add(
             UserRoleInfo(
@@ -41,9 +46,14 @@ class UserInfo(
         userRoleInfos.removeIf { it.roleInfo == roleInfo }
     }
 
-    // 편의 메서드: 사용자의 권한 목록 가져오기
+    // 사용자의 권한 목록 가져오기
     fun getRoleList(): List<String> {
         return userRoleInfos.map { it.roleInfo.role }
+    }
+
+    // 사용자 활성화 여부 확인
+    fun isAccessEnabled(): Boolean {
+        return isEnabled && !isDeleted
     }
 
     override fun equals(other: Any?): Boolean {
