@@ -2,16 +2,16 @@ package com.sggnology.server.feature.tag.domain
 
 import com.sggnology.server.db.sql.entity.TagInfo
 import com.sggnology.server.db.sql.repository.TagInfoRepository
-import com.sggnology.server.feature.tag.data.dto.TagRegistrationReqDto
+import com.sggnology.server.feature.tag.data.model.TagRegisterModel
 import com.sggnology.server.feature.tag.data.model.TagRegistrationModel
 
 class TagManager(
     private val tagInfoRepository: TagInfoRepository
 ) {
 
-    fun command(registrationReqDto: TagRegistrationReqDto): TagRegistrationModel {
+    fun command(tagRegisterModel: TagRegisterModel): TagRegistrationModel {
 
-        val tagNames = registrationReqDto.tagNames
+        val tagNames = tagRegisterModel.tagNames
 
         val existTagInfos = tagInfoRepository.findByNameIn(tagNames)
         val newTagInfos = mutableListOf<TagInfo>()
