@@ -9,7 +9,7 @@ import com.sggnology.server.feature.content.registration.data.dto.ContentRegistr
 import com.sggnology.server.feature.file.upload.data.model.FileAttachToContentModel
 import com.sggnology.server.feature.file.upload.data.model.FileMoveToStorageModel
 import com.sggnology.server.feature.file.upload.service.FileUploadService
-import com.sggnology.server.feature.tag.data.dto.TagRegistrationReqDto
+import com.sggnology.server.feature.tag.data.dto.req.TagRegistrationReqDto
 import com.sggnology.server.feature.tag.domain.TagManager
 import com.sggnology.server.util.logger
 import org.springframework.security.core.context.SecurityContextHolder
@@ -31,7 +31,9 @@ class ContentRegistrationService(
 
         val tagManager = TagManager(tagInfoRepository)
         val tagRegistrationReqDto = TagRegistrationReqDto(tagNames = registrationReqDto.tags)
-        val tagRegistrationModel = tagManager.command(tagRegistrationReqDto)
+        val tagRegistrationModel = tagManager.command(
+            tagRegistrationReqDto.toTagRegisterModel()
+        )
 
         val newFileInfos = fileUploadService.execute(
             FileMoveToStorageModel(
