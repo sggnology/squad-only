@@ -1,5 +1,6 @@
 package com.sggnology.server.feature.admin.account.registiration.service
 
+import com.sggnology.server.constants.RoleType
 import com.sggnology.server.db.sql.entity.UserRoleInfo
 import com.sggnology.server.db.sql.repository.RoleInfoRepository
 import com.sggnology.server.db.sql.repository.UserInfoRepository
@@ -17,9 +18,7 @@ class AdminAccountRegistrationService(
 
     @Transactional
     fun execute(adminRegisterAccountModel: AdminRegisterAccountModel) {
-        val attachingRole = "USER"
-        val roleInfo = roleInfoRepository.findByRole(attachingRole)
-            ?: throw IllegalArgumentException("Role 정보를 찾을 수 없습니다. Role: $attachingRole")
+        val roleInfo = RoleType.USER.toRoleInfo(roleInfoRepository)
 
         val newUserInfo = adminRegisterAccountModel.toUserInfo()
             .apply {
