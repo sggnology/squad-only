@@ -10,7 +10,8 @@ data class ContentInquiryResDto(
     val location: String,
     val description: String,
     val createdAt: LocalDateTime,
-    val tags: MutableSet<String> = mutableSetOf()
+    val tags: MutableSet<String> = mutableSetOf(),
+    val registeredUserId: String? = null
 ){
     companion object{
         fun fromContentInfo(contentInfo: ContentInfo): ContentInquiryResDto {
@@ -21,7 +22,8 @@ data class ContentInquiryResDto(
                 location = contentInfo.location,
                 description = contentInfo.description,
                 createdAt = contentInfo.createdAt,
-                tags = contentInfo.contentTags.map { it.tag.name }.toMutableSet()
+                tags = contentInfo.contentTags.map { it.tag.name }.toMutableSet(),
+                registeredUserId = contentInfo.registeredUser?.userId
             )
         }
     }
