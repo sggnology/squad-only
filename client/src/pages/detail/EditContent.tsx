@@ -13,6 +13,7 @@ import {
   OutlinedInput,
   Alert,
   CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
@@ -44,11 +45,11 @@ const EditContent: React.FC = () => {
   const [location, setLocation] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-
   // 이미지 관련 상태
   const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -110,17 +111,18 @@ const EditContent: React.FC = () => {
   const handleTagDelete = (tagToDelete: string) => {
     setTags(tags.filter(tag => tag !== tagToDelete));
   };
-  
-  const handleTagKeyPress = (event: React.KeyboardEvent) => {
+
+  const handleTagKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       handleTagAdd();
     }
   };
-
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setImageLoading(true);
+      
       // 1. Local preview
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
@@ -148,10 +150,13 @@ const EditContent: React.FC = () => {
         console.error('Error uploading image:', error);
         setImagePreview(null);
         setUploadedFileId(null);
+      } finally {
+        setImageLoading(false);
       }
     } else {
       setImagePreview(null);
       setUploadedFileId(null);
+      setImageLoading(false);
     }
   };
 
@@ -211,11 +216,24 @@ const EditContent: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           컨텐츠 편집
         </Typography>
-        <Box component="form" sx={{ mt: 3 }}>
-          {/* 이미지 섹션 */}
+        <Box component="form" sx={{ mt: 3 }}>          {/* 이미지 섹션 */}
           <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* 현재 이미지 또는 새 이미지 미리보기 */}
-            {(imagePreview || currentImageUrl) && (
+            {/* 이미지 로딩 중일 때 스켈레톤 표시 */}
+            {imageLoading && (
+              <Skeleton
+                variant="rectangular"
+                width={300}
+                height={300}
+                sx={{
+                  marginBottom: 2,
+                  borderRadius: 1,
+                  backgroundColor: '#f5f5f5'
+                }}
+              />
+            )}
+
+            {/* 현재 이미지 또는 새 이미지 미리보기 (로딩 중이 아닐 때만 표시) */}
+            {!imageLoading && (imagePreview || currentImageUrl) && (
               <Box
                 component="img"
                 src={imagePreview || currentImageUrl || ''}
@@ -227,23 +245,63 @@ const EditContent: React.FC = () => {
                   marginBottom: 2,
                   display: 'block',
                   border: '1px solid #ddd',
-                  borderRadius: 1
+                  borderRadius: 1,
+                  transition: 'all 0.3s ease-in-out'
                 }}
               />
+            )}
+
+            {/* 이미지가 없고 로딩 중이 아닐 때 플레이스홀더 */}
+            {!imageLoading && !imagePreview && !currentImageUrl && (
+              <Box
+                sx={{
+                  width: 300,
+                  height: 300,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px dashed #ddd',
+                  borderRadius: 1,
+                  marginBottom: 2,
+                  backgroundColor: '#fafafa',
+                  color: '#999',
+                  fontSize: '14px',
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    borderColor: '#bbb',
+                    backgroundColor: '#f5f5f5'
+                  }
+                }}
+              >
+                이미지를 업로드해주세요
+              </Box>
             )}
 
             {/* 이미지 업로드 버튼 */}
             <Button
               variant="outlined"
               component="label"
-              sx={{ mb: 2 }}
+              disabled={imageLoading}
+              sx={{ 
+                mb: 2,
+                minWidth: 120,
+                transition: 'all 0.3s ease-in-out'
+              }}
             >
-              {currentImageUrl ? '이미지 변경' : '이미지 업로드'}
+              {imageLoading ? (
+                <>
+                  <CircularProgress size={16} sx={{ mr: 1 }} />
+                  업로드 중...
+                </>
+              ) : (
+                currentImageUrl ? '이미지 변경' : '이미지 업로드'
+              )}
               <input
                 type="file"
                 hidden
                 accept="image/*"
                 onChange={handleImageChange}
+                disabled={imageLoading}
               />
             </Button>
           </Box>
@@ -289,7 +347,7 @@ const EditContent: React.FC = () => {
               id="tag-input"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={handleTagKeyPress}
+              onKeyDown={handleTagKeyDown}
               label="태그 추가"
               endAdornment={
                 <Button onClick={handleTagAdd} disabled={!tagInput.trim()}>
