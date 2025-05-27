@@ -1,5 +1,6 @@
 package com.sggnology.server.security.config
 
+import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.security.JwtTokenProvider
 import com.sggnology.server.security.filter.JwtAuthenticationFilter
 import com.sggnology.server.security.handler.JwtAccessDeniedHandler
@@ -20,7 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig(
     private val jwtTokenProvider: JwtTokenProvider,
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
-    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
+    private val userInfoRepository: UserInfoRepository
 ) {
 
     @Bean
@@ -63,7 +65,7 @@ class SecurityConfig(
                     .anyRequest().permitAll()
             }
             .addFilterBefore(
-                JwtAuthenticationFilter(jwtTokenProvider),
+                JwtAuthenticationFilter(jwtTokenProvider, userInfoRepository),
                 UsernamePasswordAuthenticationFilter::class.java
             )
 
