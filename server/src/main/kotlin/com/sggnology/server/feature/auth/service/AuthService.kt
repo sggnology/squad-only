@@ -1,18 +1,18 @@
 package com.sggnology.server.feature.auth.service
 
+import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.feature.auth.data.dto.req.AuthIdentifyMeModel
-import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.security.JwtTokenProvider
 import com.sggnology.server.util.JwtTokenUtil
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class AuthService(
@@ -28,13 +28,19 @@ class AuthService(
         val userInfo = userInfoRepository.findByUserId(authLoginModel.userId)
             ?: throw BadCredentialsException("Invalid credentials")
 
-        if (!passwordEncoder.matches(authLoginModel.password, userInfo.userPw)) {
-            throw BadCredentialsException("Invalid credentials")
-        }
+        validateUserState(userInfo)
+
+        validateUserCredentials(authLoginModel.password, userInfo)
 
         val authorities = userInfo.getRoleList().map { SimpleGrantedAuthority(it) }
 
         val token = jwtTokenProvider.createToken(userInfo.userId, authorities)
+
+        userInfoRepository.save(
+            userInfo.apply {
+                lastLoginAt = LocalDateTime.now()
+            }
+        )
 
         return AuthLoginResDto(
             token = token,
@@ -69,7 +75,7 @@ class AuthService(
         val userInfo = userInfoRepository.findByUserId(authentication.name)
             ?: throw BadCredentialsException("Invalid credentials")
 
-//        val newToken = jwtTokenProvider.createToken(userInfo.userId, authorities)
+        validateUserState(userInfo)
 
         return AuthLoginResDto(
             token = token,
@@ -78,5 +84,24 @@ class AuthService(
             nickname = userInfo.nickname,
             roles = userInfo.getRoleList()
         )
+    }
+
+    private fun validateUserState(
+        userInfo: UserInfo
+    ) {
+
+        if (!userInfo.isAccessEnabled()) {
+            throw BadCredentialsException("User account is not accessible")
+        }
+
+    }
+
+    private fun validateUserCredentials(
+        password: String,
+        userInfo: UserInfo
+    ) {
+        if (!passwordEncoder.matches(password, userInfo.userPw)) {
+            throw BadCredentialsException("Invalid credentials")
+        }
     }
 }
