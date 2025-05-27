@@ -20,7 +20,7 @@ class ContentInfo(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registered_user_idx", nullable = true)
-    val registeredUser: UserInfo? = null, // Non-nullable reference
+    var registeredUser: UserInfo? = null, // Non-nullable reference
 
     @OneToMany(mappedBy = "content", cascade = [CascadeType.ALL], orphanRemoval = true)
     val contentTags: MutableSet<ContentTagInfo> = mutableSetOf(),
