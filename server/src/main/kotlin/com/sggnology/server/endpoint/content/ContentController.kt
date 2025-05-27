@@ -7,6 +7,9 @@ import com.sggnology.server.feature.content.inquiry.data.model.ContentsInquiryMo
 import com.sggnology.server.feature.content.inquiry.service.ContentInquiryService
 import com.sggnology.server.feature.content.registration.data.dto.ContentRegistrationReqDto
 import com.sggnology.server.feature.content.registration.service.ContentRegistrationService
+import com.sggnology.server.feature.content.update.data.dto.ContentUpdateReqDto
+import com.sggnology.server.feature.content.update.data.model.ContentUpdateModel
+import com.sggnology.server.feature.content.update.service.ContentUpdateService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -20,8 +23,9 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Content Management", description = "Content management APIs")
 class ContentController(
     private val contentInquiryService: ContentInquiryService,
-    private val contentRegistrationService: ContentRegistrationService
-) {
+    private val contentRegistrationService: ContentRegistrationService,
+    private val contentUpdateService: ContentUpdateService
+){
 
     @Operation(
         summary = "Get content",
@@ -66,5 +70,30 @@ class ContentController(
         @Valid @RequestBody contentRegistrationReqDto: ContentRegistrationReqDto
     ) {
         contentRegistrationService.execute(contentRegistrationReqDto)
+    }
+
+    @Operation(
+        summary = "Update content"
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successfully updated content"),
+        ApiResponse(responseCode = "400", description = "Bad request"),
+        ApiResponse(responseCode = "403", description = "Forbidden - No permission to update this content"),
+        ApiResponse(responseCode = "404", description = "Content not found"),
+    ])    @PutMapping("/{idx}")
+    fun update(
+        @PathVariable("idx") idx: Long,
+        @Valid @RequestBody contentUpdateReqDto: ContentUpdateReqDto
+    ) {
+        contentUpdateService.execute(
+            ContentUpdateModel(
+                idx = idx,
+                title = contentUpdateReqDto.title,
+                description = contentUpdateReqDto.description,
+                location = contentUpdateReqDto.location,
+                tags = contentUpdateReqDto.tags,
+                newFileIds = contentUpdateReqDto.newFileIds
+            )
+        )
     }
 }
