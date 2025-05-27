@@ -4,6 +4,7 @@ import Home from './pages/home/Home';
 import Login from './pages/login/Login';
 import Register from './pages/register/Register';
 import Detail from './pages/detail/Detail';
+import EditContent from './pages/detail/EditContent';
 import NotFound from './pages/notfound/NotFound';
 import MyPage from './pages/mypage/MyPage';
 import AdminPage from './pages/admin/AdminPage';
@@ -51,7 +52,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/detail/:id" element={<Detail />} />
+            <Route path="/detail/:idx" element={<Detail />} />
 
             {/* Protected Routes - 로그인 필요 */}
             <Route path="/register" element={
@@ -62,6 +63,11 @@ function App() {
             <Route path="/mypage" element={
               <ProtectedRoute>
                 <MyPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/edit/:idx" element={
+              <ProtectedRoute>
+                <EditContent />
               </ProtectedRoute>
             } />
 

@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
 import { formatDateTime } from '../../utils/DateUtil';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAppSelector } from '../../store/hooks';
+import { Fab } from '@mui/material';
+import { Edit as EditIcon } from '@mui/icons-material';
 import './Detail.css';
+import { selectAuth } from '../../store/authSlice';
 
 interface ContentResponseData {
   idx: number;
@@ -12,6 +16,7 @@ interface ContentResponseData {
   location: string;
   description: string;
   createdAt: string;
+  registeredUserId?: string;
 }
 
 interface Content {
@@ -22,17 +27,36 @@ interface Content {
   location: string;
   description: string;
   createdAt: string;
+  registeredUserId?: string;
 }
 
 function Detail() {
+  const { idx } = useParams<{ idx: string }>();
+
   const [content, setContent] = useState<Content | null>(null);
   const [loading, setLoading] = useState(false);
   const fetchingRef = useRef(false); // 중복 요청 방지 플래그
-  // usePath hook: returns the current location path
-  const path = useLocation().pathname;
-  // Assuming the path is like "/detail/123", extract the idx
-  // Remove query string if present, then extract the idx
-  const idx = path.replace(/\?.*$/, '').split('/').pop();
+
+  // Redux 상태에서 로그인한 사용자 정보 가져오기
+  const { user, isAuthenticated } = useAppSelector(selectAuth);
+  const navigate = useNavigate();
+
+
+  // 편집 권한 확인 함수
+  const canEditContent = (): boolean => {
+    if (!isAuthenticated || !user || !content) return false;
+
+    // 관리자는 모든 컨텐츠 편집 가능
+    if (user.roles.includes('ROLE_ADMIN')) return true;
+
+    // 컨텐츠 소유자만 편집 가능
+    return content.registeredUserId === user.userId;
+  };
+
+  // 편집 버튼 클릭 핸들러
+  const handleEditClick = () => {
+    navigate(`/edit/${content?.idx}`);
+  };
 
   // Simulate fetching content by ID
   useEffect(() => {
@@ -47,7 +71,6 @@ function Detail() {
 
         // Type assertion for Spring pageable response
         const responseData = res.data;
-
         const newContent: Content = {
           idx: responseData.idx,
           imageUrl: responseData.fileIds && responseData.fileIds.length > 0 ? `/api/v1/file/${responseData.fileIds[0]}` : 'https://placehold.co/400', // Fallback image URL
@@ -56,6 +79,7 @@ function Detail() {
           location: responseData.location,
           description: responseData.description,
           createdAt: formatDateTime(responseData.createdAt),
+          registeredUserId: responseData.registeredUserId,
         };
 
         setContent(newContent);
@@ -95,7 +119,7 @@ function Detail() {
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px' }}>
+    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px', position: 'relative' }}>
       {loading && <p>Loading...</p>}
       {!loading && !content && <p>No content found.</p>}
       {!loading && content != null && (
@@ -126,6 +150,23 @@ function Detail() {
           <p><strong>Location:</strong> {content.location}</p>
           <p><strong>Created At:</strong> {content.createdAt}</p>
         </>
+      )}
+
+      {/* 플로팅 편집 버튼 - 편집 권한이 있을 때만 표시 */}
+      {canEditContent() && (
+        <Fab
+          color="primary"
+          aria-label="edit"
+          onClick={handleEditClick}
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 1000,
+          }}
+        >
+          <EditIcon />
+        </Fab>
       )}
     </div>
   );
