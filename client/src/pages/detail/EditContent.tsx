@@ -165,6 +165,14 @@ const EditContent: React.FC = () => {
       setSaving(true);
       setError(null);
 
+      if (!title.trim()) {
+        setError('제목과 위치는 필수 입력 사항입니다.');
+      }
+
+      if( !location.trim()) {
+        setError('제목과 위치는 필수 입력 사항입니다.');
+      }
+
       const updateData = {
         title: title.trim(),
         description: description.trim(),
@@ -325,9 +333,6 @@ const EditContent: React.FC = () => {
             margin="normal"
             multiline
             rows={4}
-            required
-            error={!description.trim()}
-            helperText={!description.trim() ? '설명을 입력해주세요' : ''}
           />
 
           <TextField
@@ -381,7 +386,7 @@ const EditContent: React.FC = () => {
               variant="contained"
               onClick={handleSave}
               startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-              disabled={saving || !title.trim() || !description.trim() || !location.trim()}
+              disabled={saving || !title.trim() || !location.trim()}
             >
               {saving ? '저장 중...' : '저장'}
             </Button>

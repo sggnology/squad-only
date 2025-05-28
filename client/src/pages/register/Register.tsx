@@ -109,10 +109,7 @@ function Register() {
         setError('제목을 입력해주세요.');
         return;
       }
-      if (!description.trim()) {
-        setError('설명을 입력해주세요.');
-        return;
-      }
+
       if (!location.trim()) {
         setError('위치를 입력해주세요.');
         return;
@@ -262,10 +259,7 @@ function Register() {
             onChange={(e) => setDescription(e.target.value)}
             margin="normal"
             multiline
-            rows={4}
-            required
-            error={!description.trim() && error !== null}
-            helperText={!description.trim() && error !== null ? '설명을 입력해주세요' : ''}
+            rows={4}            
           />
 
           <TextField
@@ -319,7 +313,7 @@ function Register() {
               variant="contained"
               onClick={handleSubmit}
               startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-              disabled={saving || !title.trim() || !description.trim() || !location.trim()}
+              disabled={saving || !title.trim() || !location.trim()}
             >
               {saving ? '등록 중...' : '등록'}
             </Button>
