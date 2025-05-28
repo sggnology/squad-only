@@ -3,10 +3,28 @@ import axiosInstance from '../../utils/axiosInstance';
 import { formatDateTime } from '../../utils/DateUtil';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { Fab } from '@mui/material';
-import { Edit as EditIcon } from '@mui/icons-material';
-import './Detail.css';
+import {
+  Container,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Chip,
+  Box,
+  Fab,
+  CircularProgress,
+  Avatar,
+  Paper,
+  Divider
+} from '@mui/material';
+import {
+  Edit as EditIcon,
+  Person as PersonIcon,
+  LocationOn as LocationIcon,
+  CalendarToday as CalendarIcon
+} from '@mui/icons-material';
 import { selectAuth } from '../../store/authSlice';
+import LocationMap from '../../components/LocationMap';
 
 interface ContentResponseData {
   idx: number;
@@ -16,7 +34,8 @@ interface ContentResponseData {
   location: string;
   description: string;
   createdAt: string;
-  registeredUserId?: string;
+  registeredUserId: string | null;
+  registeredUsername: string | null;
 }
 
 interface Content {
@@ -27,7 +46,8 @@ interface Content {
   location: string;
   description: string;
   createdAt: string;
-  registeredUserId?: string;
+  registeredUserId: string | null;
+  registeredUsername: string | null;
 }
 
 function Detail() {
@@ -80,6 +100,7 @@ function Detail() {
           description: responseData.description,
           createdAt: formatDateTime(responseData.createdAt),
           registeredUserId: responseData.registeredUserId,
+          registeredUsername: responseData.registeredUsername || 'Unknown',
         };
 
         setContent(newContent);
@@ -93,63 +114,138 @@ function Detail() {
       }
     };
 
-    fetchContent(); // Fetch content when page changes (and not last)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchContent(); // Fetch content when page changes (and not last)    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx]);
-
-  // 이미지 컨테이너 스타일
-  const imageContainerStyle: React.CSSProperties = {
-    width: '100%', // 부모 요소의 너비를 따름
-    maxWidth: '400px', // 데스크톱 최대 너비
-    height: '400px', // 데스크톱 최대 높이
-    marginBottom: '20px',
-    overflow: 'hidden', // 이미지가 컨테이너를 벗어나지 않도록
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0', // 이미지가 로드되기 전 배경색
-  };
-
-  // 이미지 자체 스타일
-  const imageStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain', // 이미지 비율을 유지하면서 컨테이너를 채움
-  };
-
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px', position: 'relative' }}>
-      {loading && <p>Loading...</p>}
-      {!loading && !content && <p>No content found.</p>}
+    <Container maxWidth="md" sx={{ py: 4, minHeight: '100vh' }}>
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+      
+      {!loading && !content && (
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" color="text.secondary">
+            콘텐츠를 찾을 수 없습니다.
+          </Typography>
+        </Paper>
+      )}
+      
       {!loading && content != null && (
-        <>
-          <h1 className="detail-title">
-            {content.title}
-          </h1>
-          {/* 이미지 컨테이너 추가 */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={imageContainerStyle} className="detail-image-container">
-              <img
-                src={content.imageUrl}
-                alt={content.title}
-                style={imageStyle}
-              />
-            </div>
-          </div>
-          {content.tags.length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              {content.tags.map((tag, index) => (
-                <span key={index} style={{ marginRight: '10px', padding: '5px', backgroundColor: '#e0e0e0', borderRadius: '5px' }}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {content.description && <p><strong>Description:</strong> {content.description}</p>}
-          <p><strong>Location:</strong> {content.location}</p>
-          <p><strong>Created At:</strong> {content.createdAt}</p>
-        </>
+        <Card sx={{ maxWidth: 800, mx: 'auto', mb: 8 }}>
+          {/* 이미지 섹션 */}
+          <CardMedia
+            component="img"
+            height="400"
+            image={content.imageUrl}
+            alt={content.title}
+            sx={{ objectFit: 'cover' }}
+          />
+          
+          <CardContent sx={{ p: 4 }}>
+            {/* 제목 */}
+            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
+              {content.title}
+            </Typography>
+
+            {/* 태그 섹션 */}
+            {content.tags.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  태그
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {content.tags.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      size="small"
+                      sx={{
+                        backgroundColor: '#e3f2fd',
+                        color: '#1976d2',
+                        '&:hover': {
+                          backgroundColor: '#bbdefb',
+                        }
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}            
+            
+            <Divider sx={{ my: 3 }} />
+
+            {/* 상세 정보 섹션 */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* 등록자 정보 */}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar sx={{ mr: 2, backgroundColor: '#1976d2' }}>
+                  <PersonIcon />
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    등록자
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                    {content.registeredUsername}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* 등록일 */}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar sx={{ mr: 2, backgroundColor: '#4caf50' }}>
+                  <CalendarIcon />
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    등록일
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                    {content.createdAt}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* 위치 정보 */}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar sx={{ mr: 2, backgroundColor: '#ff9800' }}>
+                  <LocationIcon />
+                </Avatar>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    위치
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                    {content.location}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* 설명 섹션 */}
+            {content.description && (
+              <>
+                <Divider sx={{ my: 3 }} />
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                    설명
+                  </Typography>
+                  <Typography variant="body1" sx={{ lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+                    {content.description}
+                  </Typography>
+                </Box>
+              </>
+            )}            {/* 지도 섹션 */}
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
+                위치 지도
+              </Typography>
+              <LocationMap location={content.location} height={300} />
+            </Box>
+          </CardContent>
+        </Card>
       )}
 
       {/* 플로팅 편집 버튼 - 편집 권한이 있을 때만 표시 */}
@@ -158,7 +254,7 @@ function Detail() {
           color="primary"
           aria-label="edit"
           onClick={handleEditClick}
-          style={{
+          sx={{
             position: 'fixed',
             bottom: 24,
             right: 24,
@@ -168,7 +264,7 @@ function Detail() {
           <EditIcon />
         </Fab>
       )}
-    </div>
+    </Container>
   );
 }
 
