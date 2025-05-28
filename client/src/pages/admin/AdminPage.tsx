@@ -13,8 +13,11 @@ import {
   Article as ArticleIcon,
   Dashboard as DashboardIcon 
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function AdminPage() {
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <Typography variant="h4" component="h1" sx={{ mb: 6, fontWeight: 'bold' }}>
@@ -32,7 +35,11 @@ function AdminPage() {
           <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
           사용자 계정 생성, 수정, 삭제 및 권한 관리
           </Typography>
-          <Button variant="contained" fullWidth>
+          <Button 
+            variant="contained" 
+            fullWidth
+            onClick={() => navigate('/admin/users')}
+          >
           사용자 관리
           </Button>
         </CardContent>

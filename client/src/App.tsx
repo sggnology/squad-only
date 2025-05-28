@@ -8,6 +8,7 @@ import EditContent from './pages/detail/EditContent';
 import NotFound from './pages/notfound/NotFound';
 import MyPage from './pages/mypage/MyPage';
 import AdminPage from './pages/admin/AdminPage';
+import UserManagement from './pages/admin/UserManagement';
 import AppHeader from './components/AppHeader';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -75,6 +76,11 @@ function App() {
             <Route path="/admin" element={
               <AdminRoute>
                 <AdminPage />
+              </AdminRoute>
+            } />
+            <Route path="/admin/users" element={
+              <AdminRoute>
+                <UserManagement />
               </AdminRoute>
             } />
             <Route path="/admin/*" element={
