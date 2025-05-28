@@ -9,7 +9,8 @@ data class ContentsInquiryResDto(
     val title: String,
     val location: String,
     val createdAt: LocalDateTime,
-    val tags: MutableSet<String> = mutableSetOf()
+    val tags: MutableSet<String> = mutableSetOf(),
+    val registeredUsername: String?,
 ){
     companion object{
         fun fromContentInfo(contentInfo: ContentInfo): ContentsInquiryResDto {
@@ -19,7 +20,10 @@ data class ContentsInquiryResDto(
                 title = contentInfo.title,
                 location = contentInfo.location,
                 createdAt = contentInfo.createdAt,
-                tags = contentInfo.contentTags.map { it.tag.name }.toMutableSet()
+                tags = contentInfo.contentTags.map { it.tag.name }.toMutableSet(),
+                registeredUsername = contentInfo.registeredUser?.nickname
+                    ?: contentInfo.registeredUser?.name
+                    ?: contentInfo.registeredUser?.userId
             )
         }
     }
