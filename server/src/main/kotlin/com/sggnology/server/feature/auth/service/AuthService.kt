@@ -21,7 +21,7 @@ class AuthService(
     private val jwtTokenProvider: JwtTokenProvider
 ) {
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun execute(
         authLoginModel: AuthLoginModel
     ): AuthLoginResDto {
