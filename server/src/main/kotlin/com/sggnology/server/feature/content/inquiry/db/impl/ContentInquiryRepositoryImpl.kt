@@ -37,6 +37,8 @@ class ContentInquiryRepositoryImpl(
 
         val contentQuery = queryFactory
             .selectFrom(contentInfo)
+            .leftJoin(contentInfo.registeredUser)
+            .fetchJoin()
             .where(
                 contentInfo.isDeleted.eq(false)
             )
