@@ -79,7 +79,7 @@ function Home() {
           imageUrl: item.fileIds && item.fileIds.length > 0 ? `/api/v1/file/${item.fileIds[0]}` : 'https://placehold.co/400', // Fallback image URL
           title: item.title,
           tags: item.tags,
-          registeredUsername: item.registeredUsername == null ? 'Unknown' : item.registeredUsername,
+          registeredUsername: item.registeredUsername || 'Unknown',
           location: item.location,
           createdAt: formatDateTime(item.createdAt),
         }));
