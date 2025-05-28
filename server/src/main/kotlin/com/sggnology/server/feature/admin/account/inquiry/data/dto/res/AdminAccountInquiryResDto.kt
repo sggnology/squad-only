@@ -7,6 +7,8 @@ data class AdminAccountInquiryResDto(
     val userId: String,
     val name: String,
     val isEnabled: Boolean,
+    val isDeleted: Boolean,
+    val roles: List<String>,
     val createdAt: LocalDateTime,
     val lastLoginAt: LocalDateTime?
 ) {
@@ -16,6 +18,8 @@ data class AdminAccountInquiryResDto(
                 userId = userInfo.userId,
                 name = userInfo.name,
                 isEnabled = userInfo.isEnabled,
+                isDeleted = userInfo.isDeleted,
+                roles = userInfo.getRoleList(),
                 createdAt = userInfo.createdAt,
                 lastLoginAt = userInfo.lastLoginAt
             )
