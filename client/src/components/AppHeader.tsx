@@ -53,7 +53,7 @@ function AppHeader() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [currentSubMenu, setCurrentSubMenu] = useState<MenuItem | null>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
-  const isMdUp = useMediaQuery('(min-width:960px)');
+  const isMdUp = useMediaQuery('(min-width:1360px)');
 
   const toggleDrawer = () => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
@@ -207,8 +207,8 @@ function AppHeader() {
 
         {/* 오른쪽 영역 - 데스크톱 메뉴 */}
         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 1, alignItems: 'center' }}>
-          {isAuthenticated && user && (
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', mr: 1 }}>
+          {isAuthenticated && user &&  (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar sx={{ width: 32, height: 32, mr: 1 }}>
                 {isAdmin ? <AdminPanelSettingsIcon /> : <PersonIcon />}
               </Avatar>
