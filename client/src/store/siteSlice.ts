@@ -13,6 +13,10 @@ export interface SiteResponse {
   name: string;
 }
 
+export interface SiteUpdateRequest {
+  name: string;
+}
+
 export const siteAsync = createAsyncThunk<SiteResponse, void>(
   'site/fetchSite',
   async () => {
@@ -27,6 +31,20 @@ export const siteAsync = createAsyncThunk<SiteResponse, void>(
   }
 )
 
+export const updateSiteAsync = createAsyncThunk<SiteResponse, SiteUpdateRequest>(
+  'site/updateSite',
+  async (updateData) => {
+    try {
+      const response = await axiosInstance.put<SiteResponse>('/site', updateData);
+      return response.data;
+    }
+    catch (error) {
+      console.error('Failed to update site:', error);
+      throw error;
+    }
+  }
+)
+
 export const siteSlice = createSlice({
   name: 'site',
   initialState,
@@ -34,8 +52,7 @@ export const siteSlice = createSlice({
     setSiteName: (state, action) => {
       state.name = action.payload;
     },
-  },
-  extraReducers: (builder) => {
+  },  extraReducers: (builder) => {
     builder
       .addCase(siteAsync.pending, (state) => {
         // 요청 시작 시 로딩 상태로 변경할 수 있습니다.
@@ -48,6 +65,12 @@ export const siteSlice = createSlice({
         console.error('Failed to fetch site:', action.error.message);
         // 에러 시 기본값 유지
         state.name = initialState.name;
+      })
+      .addCase(updateSiteAsync.fulfilled, (state, action) => {
+        state.name = action.payload.name;
+      })
+      .addCase(updateSiteAsync.rejected, (state, action) => {
+        console.error('Failed to update site:', action.error.message);
       });
   },
 });

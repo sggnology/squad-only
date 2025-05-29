@@ -98,7 +98,6 @@ function AppHeader() {
     //   action: () => navigate('/register'),
     // },
   ];
-
   // 로그인된 사용자용 메뉴
   const userMenuItems: MenuItem[] = [
     ...(isAdmin ? [{
@@ -107,6 +106,7 @@ function AppHeader() {
         { label: '관리자 대시보드', action: () => navigate('/admin') },
         { label: '사용자 관리', action: () => navigate('/admin/users') },
         { label: '콘텐츠 관리', action: () => navigate('/admin/contents') },
+        { label: '사이트 관리', action: () => navigate('/admin/site') },
       ],
     }] : []),
     {
