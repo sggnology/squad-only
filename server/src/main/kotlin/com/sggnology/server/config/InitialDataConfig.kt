@@ -1,7 +1,7 @@
 package com.sggnology.server.config
 
-import com.sggnology.server.constants.RoleType
-import com.sggnology.server.constants.SiteConfig
+import com.sggnology.server.common.type.RoleType
+import com.sggnology.server.common.constants.SiteConfig
 import com.sggnology.server.db.sql.entity.ConfigInfo
 import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.repository.ConfigInfoRepository

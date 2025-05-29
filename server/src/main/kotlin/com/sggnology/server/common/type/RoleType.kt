@@ -1,4 +1,4 @@
-package com.sggnology.server.constants
+package com.sggnology.server.common.type
 
 import com.sggnology.server.db.sql.entity.RoleInfo
 import com.sggnology.server.db.sql.repository.RoleInfoRepository
