@@ -34,6 +34,7 @@ import {
   selectUser,
   selectIsAdmin
 } from '../store/authSlice';
+import { selectSiteName } from '../store/siteSlice';
 
 interface MenuItem {
   label: string;
@@ -42,11 +43,11 @@ interface MenuItem {
 }
 
 function AppHeader() {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
   const isAdmin = useAppSelector(selectIsAdmin);
+  const siteName = useAppSelector(selectSiteName);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
@@ -191,8 +192,8 @@ function AppHeader() {
               </Drawer>
             </>
           )}
-        </Box>
-
+        </Box>        
+        
         {/* 중앙 영역 - 로고 */}
         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
           <Typography
@@ -201,7 +202,7 @@ function AppHeader() {
             sx={{ cursor: 'pointer', fontWeight: 'bold' }}
             onClick={() => navigate('/')}
           >
-            SquadOnly
+            {siteName}
           </Typography>
         </Box>
 

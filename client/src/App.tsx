@@ -14,6 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import { useAppDispatch } from './store/hooks';
 import { logoutAsync, validateTokenAsync } from './store/authSlice';
+import { siteAsync } from './store/siteSlice';
 import './App.css';
 
 function App() {
@@ -29,7 +30,17 @@ function App() {
       }
     };
 
+    // 사이트 정보 초기화
+    const initializeSite = async () => {
+      try {
+        await dispatch(siteAsync());
+      } catch (error) {
+        console.error('Failed to initialize site:', error);
+      }
+    };
+
     initializeAuth();
+    initializeSite();
 
     // 401 Unauthorized 이벤트 리스너 등록
     const handleUnauthorized = () => {
