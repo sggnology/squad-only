@@ -1,6 +1,6 @@
 package com.sggnology.server.feature.site.modification.service
 
-import com.sggnology.server.constants.SiteConfig
+import com.sggnology.server.common.constants.SiteConfig
 import com.sggnology.server.db.sql.repository.ConfigInfoRepository
 import com.sggnology.server.feature.site.modification.data.dto.res.SiteModificationResDto
 import com.sggnology.server.feature.site.modification.data.model.SiteModifyModel

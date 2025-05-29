@@ -1,6 +1,6 @@
 package com.sggnology.server.feature.site.inquiry.service
 
-import com.sggnology.server.constants.SiteConfig
+import com.sggnology.server.common.constants.SiteConfig
 import com.sggnology.server.db.sql.repository.ConfigInfoRepository
 import com.sggnology.server.feature.site.inquiry.data.dto.res.SiteInquiryResDto
 import org.springframework.stereotype.Service

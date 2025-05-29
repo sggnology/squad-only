@@ -1,4 +1,4 @@
-package com.sggnology.server.constants
+package com.sggnology.server.common.constants
 
 object SiteConfig {
     const val SITE_NAME_KEY = "SITE_NAME"
