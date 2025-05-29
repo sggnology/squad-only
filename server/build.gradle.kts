@@ -36,6 +36,9 @@ dependencies {
     // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-security")
 
+    // Spring AOP
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
     // JWT Dependencies
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
