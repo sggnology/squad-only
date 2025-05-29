@@ -46,6 +46,9 @@ class SecurityConfig(
                     // 콘텐츠 조회시 사용되는 파일 조회 접근 가능
                     .requestMatchers(HttpMethod.GET, "/api/v1/file/*").permitAll()
 
+                    // 사이트 정보 조회시 접근 가능
+                    .requestMatchers(HttpMethod.GET, "/api/v1/site").permitAll()
+
                     // 정적 리소스 허용
                     .requestMatchers("/", "/static/**", "/assets/**").permitAll()
 
