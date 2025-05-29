@@ -1,6 +1,6 @@
 package com.sggnology.server.feature.admin.account.registiration.service
 
-import com.sggnology.server.constants.RoleType
+import com.sggnology.server.common.type.RoleType
 import com.sggnology.server.db.sql.entity.UserRoleInfo
 import com.sggnology.server.db.sql.repository.RoleInfoRepository
 import com.sggnology.server.db.sql.repository.UserInfoRepository
