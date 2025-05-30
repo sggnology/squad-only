@@ -1,5 +1,7 @@
 package com.sggnology.server.feature.content.update.service
 
+import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.entity.ContentTagInfo
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
 import com.sggnology.server.db.sql.repository.TagInfoRepository
@@ -21,6 +23,7 @@ class ContentUpdateService(
     private val fileUploadService: FileUploadService
 ) {
 
+    @WithUserInfo
     @Transactional
     fun execute(contentUpdateModel: ContentUpdateModel) {
         // 컨텐츠 조회
@@ -29,19 +32,21 @@ class ContentUpdateService(
 
         // 권한 확인
         val authentication = SecurityContextHolder.getContext().authentication
-        val currentUserId = authentication.name
+        val userInfo = UserInfoContextHolder.getUserInfo()
 
         // 관리자일 경우 수정 가능
         val isAdmin = authentication.authorities.any { it.authority == "ROLE_ADMIN" }
 
         if(!isAdmin){
             // 컨텐츠 소유자가 아닌 경우 권한 없음
-            val isOwner = contentInfo.registeredUser?.userId == currentUserId
+            val isOwner = contentInfo.registeredUser == userInfo
 
             if (!isOwner) {
                 throw IllegalArgumentException("이 컨텐츠를 수정할 권한이 없습니다.")
             }
-        }        // 컨텐츠 정보 업데이트
+        }
+
+        // 컨텐츠 정보 업데이트
         contentInfo.title = contentUpdateModel.title
         contentInfo.description = contentUpdateModel.description
         contentInfo.location = contentUpdateModel.location
@@ -91,7 +96,7 @@ class ContentUpdateService(
 
         // 컨텐츠 수정 정보 로깅
         logger.info(
-            "컨텐츠 수정: IDX='${contentInfo.idx}', Title='${contentInfo.title}', 사용자 ='${currentUserId}' "
+            "컨텐츠 수정: IDX='${contentInfo.idx}', Title='${contentInfo.title}', 사용자 ='${userInfo.userId}' "
         )
 
         // 컨텐츠 저장
