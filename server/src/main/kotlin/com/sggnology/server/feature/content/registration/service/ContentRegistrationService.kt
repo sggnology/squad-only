@@ -1,5 +1,7 @@
 package com.sggnology.server.feature.content.registration.service
 
+import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.entity.ContentInfo
 import com.sggnology.server.db.sql.entity.ContentTagInfo
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
@@ -24,6 +26,7 @@ class ContentRegistrationService(
     private val fileUploadService: FileUploadService
 ) {
 
+    @WithUserInfo
     @Transactional
     fun execute(
         registrationReqDto: ContentRegistrationReqDto
@@ -48,11 +51,8 @@ class ContentRegistrationService(
         )
 
         // 사용자 연결
-        val authentication = SecurityContextHolder.getContext().authentication
-        val userId = authentication.name
-        val registeredUser = userInfoRepository.findByUserId(userId)
-            ?: throw IllegalArgumentException("등록된 사용자를 찾을 수 없습니다: $userId")
-        newContentInfo.registeredUser = registeredUser
+        val userInfo = UserInfoContextHolder.getUserInfo()
+        newContentInfo.registeredUser = UserInfoContextHolder.getUserInfo()
 
         // 파일 연결
         fileUploadService.execute(
@@ -73,7 +73,7 @@ class ContentRegistrationService(
         )
 
         // 컨텐츠 등록에 대한 정보 로깅
-        logger.info("Registering new content: ${newContentInfo.title} by user: $userId(idx: ${registeredUser.idx})")
+        logger.info("Registering new content: ${newContentInfo.title} by user: ${userInfo.userId}(idx: ${userInfo.idx})")
 
         contentInfoRepository.save(newContentInfo)
     }
