@@ -55,6 +55,13 @@ class FileUploadService(
     }
 
     fun execute(fileAttachToContentModel: FileAttachToContentModel) {
+
+        // contentInfo.fileInfos 동기화
+        fileAttachToContentModel.contentInfo.fileInfos.addAll(
+            fileAttachToContentModel.fileInfos
+        )
+
+        // fileInfo.contentInfo 동기화
         fileAttachToContentModel.fileInfos.forEach { fileInfo ->
             fileInfo.contentInfo = fileAttachToContentModel.contentInfo
             fileInfoRepository.save(fileInfo)
