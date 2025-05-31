@@ -1,7 +1,7 @@
 # 멀티 스테이지 빌드를 사용하여 최적화된 Docker 이미지 생성
 
 # Stage 1: 빌드 스테이지 (Build Stage)
-FROM eclipse-temurin:24-jdk-alpine AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 # 작업 디렉토리 설정
 WORKDIR /build
@@ -25,7 +25,7 @@ COPY src src
 RUN ./gradlew build --no-daemon -x test
 
 # Stage 2: 런타임 스테이지 (Runtime Stage)
-FROM eclipse-temurin:24-jre-alpine AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 # curl 설치 및 spring 사용자/그룹 생성 (보안 강화)
 RUN addgroup -S spring && \
