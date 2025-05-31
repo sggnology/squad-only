@@ -1,4 +1,4 @@
-package com.sggnology.server.feature.auth.data.dto.req
+package com.sggnology.server.feature.auth.data.model
 
 data class AuthIdentifyMeModel(
     val accessToken: String? = null,
