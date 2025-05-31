@@ -12,7 +12,13 @@ import {
   CardActions,
   Divider,
   Avatar,
-  Chip
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -20,7 +26,11 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon,
   AccountCircle as AccountCircleIcon,
-  Event as EventIcon
+  Event as EventIcon,
+  Lock as LockIcon,
+  Visibility,
+  VisibilityOff,
+  Close as CloseIcon
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectUser, updateUserProfile } from '../../store/authSlice';
@@ -36,6 +46,12 @@ interface Profile {
 interface ProfileUpdateResponse {
   name: string;
   nickname: string | null;
+}
+
+interface PasswordChangeRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
 }
 
 function MyPage() {
@@ -56,6 +72,25 @@ function MyPage() {
     name: '',
     nickname: ''
   });
+
+  // 비밀번호 변경 모달 관련 상태
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  });
+  const [passwordFormErrors, setPasswordFormErrors] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  });
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -78,7 +113,6 @@ function MyPage() {
       setLoading(false);
     }
   };
-
   const validateForm = () => {
     const errors = {
       name: '',
@@ -97,6 +131,33 @@ function MyPage() {
 
     setFormErrors(errors);
     return !errors.name && !errors.nickname;
+  };
+
+  const validatePasswordForm = () => {
+    const errors = {
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: ''
+    };
+
+    if (!passwordForm.currentPassword.trim()) {
+      errors.currentPassword = '현재 비밀번호를 입력해주세요.';
+    }
+
+    if (!passwordForm.newPassword.trim()) {
+      errors.newPassword = '새 비밀번호를 입력해주세요.';
+    } else if (passwordForm.newPassword.length < 8) {
+      errors.newPassword = '비밀번호는 8자 이상이어야 합니다.';
+    }
+
+    if (!passwordForm.confirmNewPassword.trim()) {
+      errors.confirmNewPassword = '비밀번호 확인을 입력해주세요.';
+    } else if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      errors.confirmNewPassword = '비밀번호가 일치하지 않습니다.';
+    }
+
+    setPasswordFormErrors(errors);
+    return !errors.currentPassword && !errors.newPassword && !errors.confirmNewPassword;
   };
 
   const handleEditStart = () => {
@@ -175,6 +236,82 @@ function MyPage() {
         [field]: ''
       }));
     }
+  };
+  // 비밀번호 변경 관련 핸들러들
+  const handlePasswordChange = async () => {
+    if (!validatePasswordForm()) {
+      return;
+    }
+
+    setPasswordLoading(true);
+    setError(null);
+
+    try {
+      await axiosInstance.put('/profile/password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+        confirmNewPassword: passwordForm.confirmNewPassword
+      });
+      
+      setIsPasswordModalOpen(false);
+      setPasswordForm({
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: ''
+      });
+      setPasswordFormErrors({
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: ''
+      });
+      setSuccessMessage('비밀번호가 성공적으로 변경되었습니다.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      setError('비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.');
+      console.error('Failed to change password:', err);
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const handlePasswordModalClose = () => {
+    setIsPasswordModalOpen(false);
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: ''
+    });
+    setPasswordFormErrors({
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: ''
+    });
+    setShowPasswords({
+      current: false,
+      new: false,
+      confirm: false
+    });
+  };
+
+  const handlePasswordInputChange = (field: keyof PasswordChangeRequest) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordForm(prev => ({
+      ...prev,
+      [field]: event.target.value
+    }));
+    // 입력 중 에러 메시지 초기화
+    if (passwordFormErrors[field]) {
+      setPasswordFormErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
   };
 
   const formatDate = (dateString: string) => {
@@ -273,38 +410,49 @@ function MyPage() {
                 placeholder="닉네임을 입력하세요"
               />
             </Box>
-          </CardContent>
-
-          <CardActions sx={{ justifyContent: 'flex-end', p: 3 }}>
-            {!isEditing ? (
-              <Button
-                variant="contained"
-                startIcon={<EditIcon />}
-                onClick={handleEditStart}
-                disabled={loading}
-              >
-                편집
-              </Button>
-            ) : (
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<CancelIcon />}
-                  onClick={handleEditCancel}
-                  disabled={loading}
-                >
-                  취소
-                </Button>
+          </CardContent>          
+          <CardActions sx={{ justifyContent: 'space-between', p: 3 }}>
+            <Button
+              variant="outlined"
+              startIcon={<LockIcon />}
+              onClick={() => setIsPasswordModalOpen(true)}
+              disabled={loading}
+              color="secondary"
+            >
+              비밀번호 변경
+            </Button>
+            
+            <Box>
+              {!isEditing ? (
                 <Button
                   variant="contained"
-                  startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
-                  onClick={handleSave}
+                  startIcon={<EditIcon />}
+                  onClick={handleEditStart}
                   disabled={loading}
                 >
-                  {loading ? '저장 중...' : '저장'}
+                  편집
                 </Button>
-              </Box>
-            )}
+              ) : (
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<CancelIcon />}
+                    onClick={handleEditCancel}
+                    disabled={loading}
+                  >
+                    취소
+                  </Button>
+                  <Button
+                    variant="contained"
+                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
+                    onClick={handleSave}
+                    disabled={loading}
+                  >
+                    {loading ? '저장 중...' : '저장'}
+                  </Button>
+                </Box>
+              )}
+            </Box>
           </CardActions>
         </Card>
       )}
@@ -335,9 +483,124 @@ function MyPage() {
               <Typography color="text.secondary">계정 상태:</Typography>
               <Chip label="활성" color="success" size="small" />
             </Box>
-          </Box>
-        </CardContent>
+          </Box>        </CardContent>
       </Card>
+
+      {/* 비밀번호 변경 모달 */}
+      <Dialog 
+        open={isPasswordModalOpen} 
+        onClose={handlePasswordModalClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LockIcon color="primary" />
+            비밀번호 변경
+          </Box>
+          <IconButton
+            onClick={handlePasswordModalClose}
+            disabled={passwordLoading}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
+            <TextField
+              label="현재 비밀번호"
+              type={showPasswords.current ? 'text' : 'password'}
+              value={passwordForm.currentPassword}
+              onChange={handlePasswordInputChange('currentPassword')}
+              fullWidth
+              disabled={passwordLoading}
+              error={!!passwordFormErrors.currentPassword}
+              helperText={passwordFormErrors.currentPassword}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => togglePasswordVisibility('current')}
+                      edge="end"
+                      disabled={passwordLoading}
+                    >
+                      {showPasswords.current ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            
+            <TextField
+              label="새 비밀번호"
+              type={showPasswords.new ? 'text' : 'password'}
+              value={passwordForm.newPassword}
+              onChange={handlePasswordInputChange('newPassword')}
+              fullWidth
+              disabled={passwordLoading}
+              error={!!passwordFormErrors.newPassword}
+              helperText={passwordFormErrors.newPassword || '8자 이상 입력해주세요.'}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => togglePasswordVisibility('new')}
+                      edge="end"
+                      disabled={passwordLoading}
+                    >
+                      {showPasswords.new ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            
+            <TextField
+              label="새 비밀번호 확인"
+              type={showPasswords.confirm ? 'text' : 'password'}
+              value={passwordForm.confirmNewPassword}
+              onChange={handlePasswordInputChange('confirmNewPassword')}
+              fullWidth
+              disabled={passwordLoading}
+              error={!!passwordFormErrors.confirmNewPassword}
+              helperText={passwordFormErrors.confirmNewPassword || '새 비밀번호를 다시 입력해주세요.'}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => togglePasswordVisibility('confirm')}
+                      edge="end"
+                      disabled={passwordLoading}
+                    >
+                      {showPasswords.confirm ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={handlePasswordModalClose}
+            disabled={passwordLoading}
+            variant="outlined"
+          >
+            취소
+          </Button>
+          <Button
+            onClick={handlePasswordChange}
+            disabled={passwordLoading}
+            variant="contained"
+            startIcon={passwordLoading ? <CircularProgress size={16} color="inherit" /> : <LockIcon />}
+          >
+            {passwordLoading ? '변경 중...' : '비밀번호 변경'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
