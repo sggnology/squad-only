@@ -284,11 +284,15 @@ function UserManagement() {
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="페이지당 행 수:"
         />
-      </Paper>
-
+      </Paper>      
+      
       {/* User Registration Dialog */}
       <Dialog open={registrationOpen} onClose={() => setRegistrationOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>새 사용자 등록</DialogTitle>        <DialogContent>
+        <DialogTitle>새 사용자 등록</DialogTitle>
+        <DialogContent>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            기본 비밀번호는 1234 입니다
+          </Alert>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
               fullWidth
