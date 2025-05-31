@@ -36,5 +36,5 @@ jwt:
 app:
   admin:
     username: admin
-    password: '2345'  # 실제 환경에서는 보안을 위해 환경 변수 등으로 관리하세요
+    password: '1234'  # 실제 환경에서는 보안을 위해 환경 변수 등으로 관리하세요
     name: squad-only
