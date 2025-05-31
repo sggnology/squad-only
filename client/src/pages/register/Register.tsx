@@ -17,6 +17,7 @@ import {
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
+import AddressSearch from '../../components/AddressSearch';
 
 // Interface for the content registration request body
 interface ContentRegistrationReqDto {
@@ -260,17 +261,16 @@ function Register() {
             margin="normal"
             multiline
             rows={4}            
-          />
-
-          <TextField
-            fullWidth
-            label="위치"
+          />          
+          
+          <AddressSearch
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            margin="normal"
-            required
+            onChange={(address) => setLocation(address)}
             error={!location.trim() && error !== null}
-            helperText={!location.trim() && error !== null ? '위치를 입력해주세요' : ''}
+            helperText={!location.trim() && error !== null ? '위치를 입력해주세요' : '정확한 주소를 검색해서 선택해주세요'}
+            label="위치"
+            placeholder="주소를 검색해주세요"
+            required
           />
 
           <FormControl fullWidth margin="normal">
