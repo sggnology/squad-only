@@ -1,7 +1,8 @@
 package com.sggnology.server.endpoint.auth
 
-import com.sggnology.server.feature.auth.data.dto.req.AuthIdentifyMeModel
+import com.sggnology.server.feature.auth.data.model.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
+import com.sggnology.server.feature.auth.data.dto.res.AuthIdentificationMeResDto
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.feature.auth.service.AuthService
@@ -48,7 +49,7 @@ class AuthController(
     @GetMapping("/me")
     fun identifyMe(
         @RequestHeader("Authorization") authorizationHeader: String,
-    ): AuthLoginResDto {
+    ): AuthIdentificationMeResDto {
         val loginResponse = authService.execute(
             AuthIdentifyMeModel.fromAuthorizationHeader(authorizationHeader)
         )

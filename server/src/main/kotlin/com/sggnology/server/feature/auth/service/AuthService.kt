@@ -2,7 +2,8 @@ package com.sggnology.server.feature.auth.service
 
 import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
-import com.sggnology.server.feature.auth.data.dto.req.AuthIdentifyMeModel
+import com.sggnology.server.feature.auth.data.dto.res.AuthIdentificationMeResDto
+import com.sggnology.server.feature.auth.data.model.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.security.JwtTokenProvider
@@ -54,7 +55,7 @@ class AuthService(
     @Transactional(readOnly = true)
     fun execute(
         authIdentifyMeModel: AuthIdentifyMeModel
-    ): AuthLoginResDto {
+    ): AuthIdentificationMeResDto {
 
         if(authIdentifyMeModel.accessToken == null) {
             throw BadCredentialsException("Access token is required")
@@ -77,7 +78,7 @@ class AuthService(
 
         validateUserState(userInfo)
 
-        return AuthLoginResDto(
+        return AuthIdentificationMeResDto(
             token = token,
             userId = userInfo.userId,
             name = userInfo.name,
