@@ -1,0 +1,110 @@
+# Squad Only 애플리케이션 Docker 빌드 및 배포 워크플로우
+# React 클라이언트와 Spring Boot 서버를 빌드하여 Docker 이미지로 생성하고 GHCR에 푸시
+name: Docker Build and Deploy
+
+# 워크플로우 트리거 조건
+# release 브랜치에 대한 push 또는 pull request 시 실행
+on:
+  push:
+    branches: [ release ]
+  pull_request:
+    branches: [ release ]
+
+# 전역 환경 변수
+env:
+  REGISTRY: ghcr.io                          # GitHub Container Registry 주소
+  IMAGE_NAME: ${{ github.repository }}       # 이미지 이름 (저장소 이름과 동일)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    # 필요한 권한 설정
+    permissions:
+      contents: read                          # 저장소 내용 읽기 권한
+      packages: write                         # GitHub Packages 쓰기 권한
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Node.js 환경 설정 (React 빌드용)
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'                    # Node.js 18 버전 사용
+        cache: 'npm'                          # npm 캐시 활성화
+        cache-dependency-path: client/package-lock.json
+
+    # 3. Java 환경 설정 (Spring Boot 빌드용)
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'                    # Java 17 버전 사용
+        distribution: 'temurin'               # Eclipse Temurin JDK 사용    
+        
+    # 4. React 클라이언트 애플리케이션 빌드
+    - name: Build React application
+      run: |
+        cd client
+        npm ci                                # package-lock.json 기반 정확한 의존성 설치
+        npm run build                         # Vite를 사용한 프로덕션 빌드
+
+    # 5. React 빌드 결과물을 Spring Boot 정적 리소스 폴더로 이동
+    - name: Move React build to Spring resources
+      run: |
+        rm -rf server/src/main/resources/static/*       # 기존 정적 파일 제거
+        cp -r client/dist/* server/src/main/resources/static/   # 빌드된 React 앱 복사
+
+    # 6. Gradle wrapper 실행 권한 부여
+    - name: Grant execute permission for gradlew
+      run: chmod +x server/gradlew
+
+    # 7. Spring Boot 애플리케이션 빌드
+    - name: Build Spring Boot application
+      run: |
+        cd server
+        ./gradlew clean build -x test        # 테스트 제외하고 빌드 (시간 단축)    
+        
+    # 8. GitHub Container Registry 로그인
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}         # GHCR 주소
+        username: ${{ github.actor }}         # GitHub 액터 (현재 사용자)
+        password: ${{ secrets.GITHUB_TOKEN }} # GitHub 자동 생성 토큰
+
+    # 9. Docker 이미지 메타데이터 추출 (태그, 라벨 등)
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch               # 브랜치명으로 태그
+          type=ref,event=pr                   # PR 번호로 태그
+          type=raw,value=latest,enable={{is_default_branch}}  # 기본 브랜치는 latest 태그
+          type=sha                            # Git 커밋 SHA로 태그
+
+    # 10. Docker 이미지 빌드 및 푸시
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./server                     # Dockerfile이 있는 디렉토리
+        push: true                            # 빌드 후 레지스트리에 푸시
+        tags: ${{ steps.meta.outputs.tags }}  # 메타데이터에서 생성된 태그들
+        labels: ${{ steps.meta.outputs.labels }}  # 메타데이터에서 생성된 라벨들    
+    
+    # # 11. 서버 배포 (선택사항)
+    # # main 브랜치에 푸시된 경우에만 실행
+    # - name: Deploy to server (optional)
+    #   if: github.ref == 'refs/heads/main'
+    #   run: |
+    #     echo "Deploy step - configure your deployment strategy here"
+    #     # 예시: SSH를 통한 서버 배포
+    #     # ssh user@server "docker compose pull && docker compose up -d"
+    #     # 
+    #     # 실제 배포를 위해서는 다음과 같은 설정이 필요합니다:
+    #     # 1. GitHub Secrets에 SSH 키 등록
+    #     # 2. 서버에 Docker와 docker-compose 설치
+    #     # 3. 서버에 docker-compose.yml 파일 배치
+    #     # 4. GHCR에서 이미지를 pull할 수 있는 권한 설정
