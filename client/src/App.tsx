@@ -13,13 +13,14 @@ import SiteManagement from './pages/admin/SiteManagement';
 import AppHeader from './components/AppHeader';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
-import { useAppDispatch } from './store/hooks';
+import { useAppDispatch, useAppSelector } from './store/hooks';
 import { logoutAsync, validateTokenAsync } from './store/authSlice';
-import { siteAsync } from './store/siteSlice';
+import { siteAsync, selectSiteName } from './store/siteSlice';
 import './App.css';
 
 function App() {
   const dispatch = useAppDispatch();
+  const siteName = useAppSelector(selectSiteName);
 
   useEffect(() => {
     // 앱 초기화 시 저장된 토큰이 있으면 유효성 검증
@@ -54,6 +55,11 @@ function App() {
       window.removeEventListener('unauthorized', handleUnauthorized);
     };
   }, [dispatch]);
+
+  // 사이트 이름이 변경될 때마다 title 업데이트
+  useEffect(() => {
+    document.title = siteName;
+  }, [siteName]);
 
   return (
     <Router>
