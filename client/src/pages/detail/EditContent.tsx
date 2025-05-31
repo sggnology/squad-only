@@ -38,7 +38,6 @@ const EditContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [contentResponseData, setContentResponseData] = useState<ContentResponseData | null>(null);
 
   // 폼 상태
   const [title, setTitle] = useState('');
@@ -73,7 +72,6 @@ const EditContent: React.FC = () => {
         return;
       }
 
-      setContentResponseData(contentResponseData);
       setTitle(contentResponseData.title);
       setDescription(contentResponseData.description);
       setLocation(contentResponseData.location);

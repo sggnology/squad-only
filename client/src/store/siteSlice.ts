@@ -70,6 +70,7 @@ export const siteSlice = createSlice({
         state.name = action.payload.name;
       })
       .addCase(updateSiteAsync.rejected, (state, action) => {
+        state.name = initialState.name; // 에러 발생 시 기본값으로 되돌리기
         console.error('Failed to update site:', action.error.message);
       });
   },
