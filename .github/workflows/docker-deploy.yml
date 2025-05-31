@@ -27,13 +27,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Node.js 환경 설정 (React 빌드용)
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'                    # Node.js 18 버전 사용
-        cache: 'npm'                          # npm 캐시 활성화
-        cache-dependency-path: client/package-lock.json
+    # # 2. Node.js 환경 설정 (React 빌드용)
+    # - name: Set up Node.js
+    #   uses: actions/setup-node@v4
+    #   with:
+    #     node-version: '22'                    # Node.js 18 버전 사용
+    #     cache: 'npm'                          # npm 캐시 활성화
+    #     cache-dependency-path: client/package-lock.json
 
     # 3. Java 환경 설정 (Spring Boot 빌드용)
     - name: Set up Java
@@ -42,18 +42,18 @@ jobs:
         java-version: '17'                    # Java 17 버전 사용
         distribution: 'temurin'               # Eclipse Temurin JDK 사용    
         
-    # 4. React 클라이언트 애플리케이션 빌드
-    - name: Build React application
-      run: |
-        cd client
-        npm ci                                # package-lock.json 기반 정확한 의존성 설치
-        npm run build                         # Vite를 사용한 프로덕션 빌드
+    # # 4. React 클라이언트 애플리케이션 빌드
+    # - name: Build React application
+    #   run: |
+    #     cd client
+    #     npm ci                                # package-lock.json 기반 정확한 의존성 설치
+    #     npm run build                         # Vite를 사용한 프로덕션 빌드
 
-    # 5. React 빌드 결과물을 Spring Boot 정적 리소스 폴더로 이동
-    - name: Move React build to Spring resources
-      run: |
-        rm -rf server/src/main/resources/static/*       # 기존 정적 파일 제거
-        cp -r client/dist/* server/src/main/resources/static/   # 빌드된 React 앱 복사
+    # # 5. React 빌드 결과물을 Spring Boot 정적 리소스 폴더로 이동
+    # - name: Move React build to Spring resources
+    #   run: |
+    #     rm -rf server/src/main/resources/static/*       # 기존 정적 파일 제거
+    #     cp -r client/dist/* server/src/main/resources/static/   # 빌드된 React 앱 복사
 
     # 6. Gradle wrapper 실행 권한 부여
     - name: Grant execute permission for gradlew
@@ -82,7 +82,7 @@ jobs:
         tags: |
           type=ref,event=branch               # 브랜치명으로 태그
           type=ref,event=pr                   # PR 번호로 태그
-          type=raw,value=latest,enable={{is_default_branch}}  # 기본 브랜치는 latest 태그
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/release' }}  # release 브랜치도 latest 태그
           type=sha                            # Git 커밋 SHA로 태그
 
     # 10. Docker 이미지 빌드 및 푸시
