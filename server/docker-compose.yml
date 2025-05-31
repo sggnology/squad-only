@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:17.4
+    container_name: squad-only-database
+    environment:
+      POSTGRES_DB: squad_only
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "45432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - squad-only-network
+    restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U postgres"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+
+  application:
+    image: ghcr.io/sggnology/squad-only:latest
+    container_name: squad-only-application
+    environment:
+      # 환경 변수로 프로파일 선택 (linux 또는 windows)
+      SPRING_PROFILES_INCLUDE: linux
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/squad_only
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      database
+        # condition: service_healthy
+    networks:
+      - squad-only-network
+    restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 60s
+
+volumes:
+  postgres_data:
+
+networks:
+  squad-only-network:
+    driver: bridge
