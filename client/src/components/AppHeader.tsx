@@ -108,9 +108,8 @@ function AppHeader() {
         { label: '콘텐츠 관리', action: () => navigate('/admin/contents') },
         { label: '사이트 관리', action: () => navigate('/admin/site') },
       ],
-    }] : []),
-    {
-      label: user?.name || '사용자',
+    }] : []),    {
+      label: '메뉴',
       subMenu: [
         { label: '마이페이지', action: () => navigate('/mypage') },
         { label: '콘텐츠 등록', action: () => navigate('/register') },
@@ -207,14 +206,13 @@ function AppHeader() {
         </Box>
 
         {/* 오른쪽 영역 - 데스크톱 메뉴 */}
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 1, alignItems: 'center' }}>
-          {isAuthenticated && user &&  (
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 1, alignItems: 'center' }}>          {isAuthenticated && user &&  (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar sx={{ width: 32, height: 32, mr: 1 }}>
                 {isAdmin ? <AdminPanelSettingsIcon /> : <PersonIcon />}
               </Avatar>
               <Typography variant="body2" sx={{ color: 'inherit' }}>
-                {user.name}
+                {user.nickname || user.name}
               </Typography>
             </Box>
           )}

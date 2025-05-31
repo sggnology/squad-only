@@ -109,6 +109,13 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.removeItem('token');
     },
+    // 사용자 프로필 업데이트
+    updateUserProfile: (state, action: PayloadAction<{ name: string; nickname: string | null }>) => {
+      if (state.user) {
+        state.user.name = action.payload.name;
+        state.user.nickname = action.payload.nickname;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -188,7 +195,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, setAuthenticated, clearAuthentication } = authSlice.actions;
+export const { clearError, setAuthenticated, clearAuthentication, updateUserProfile } = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state: { auth: AuthState }) => state.auth;
