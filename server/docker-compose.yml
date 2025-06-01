@@ -21,13 +21,12 @@ services:
     #   interval: 30s
     #   timeout: 10s
     #   retries: 3
-
   application:
     image: ghcr.io/sggnology/squad-only:latest
     container_name: squad-only-application
     environment:
       # 환경 변수로 프로파일 선택 (linux 또는 windows)
-      SPRING_PROFILES_ACTIVE: linux
+      # SPRING_PROFILES_ACTIVE: 
 #      SPRING_PROFILES_INCLUDE: linux
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/squad_only
       SPRING_DATASOURCE_USERNAME: postgres
@@ -39,16 +38,17 @@ services:
         # condition: service_healthy
     networks:
       - squad-only-network
-    restart: unless-stopped      
+    restart: unless-stopped    
     volumes:
       # 호스트의 ./my-app-logs 디렉터리를 컨테이너의 /app/logs 디렉터리에 마운트합니다.
       # 애플리케이션의 Logback 설정은 'logs/error.log' (작업 디렉터리가 /app인 경우)
       # 또는 절대 경로 '/app/logs/error.log'를 사용해야 합니다.
-      - ./my-app-logs:/app/logs
+      - ./my-app-logs:/app/logs:Z
       # 호스트의 ./uploads 디렉터리를 컨테이너의 /app/uploads 디렉터리에 마운트합니다.
       # 업로드된 파일들이 컨테이너 재시작 후에도 유지됩니다.
       # temp 및 storage 서브디렉토리도 포함하여 마운트됩니다.
-      - ./uploads:/app/uploads
+      - ./uploads:/app/uploads:Z
+    user: "1000:1000"  # WSL 환경에서 권한 문제 해결을 위해 호스트 사용자 ID 사용
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
     #   interval: 30s

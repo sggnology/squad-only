@@ -27,12 +27,16 @@ RUN ./gradlew build --no-daemon -x test
 # Stage 2: 런타임 스테이지 (Runtime Stage)
 FROM eclipse-temurin:21-jre-alpine AS runtime
 
-# curl 설치 및 spring 사용자/그룹 생성 (보안 강화)
-RUN addgroup -S spring && \
-    adduser -S spring -G spring
+# spring 사용자/그룹 생성 (보안 강화)
+RUN addgroup -g 1000 -S spring && \
+    adduser -u 1000 -S spring -G spring
 
 # 작업 디렉토리 설정
 WORKDIR /app
+
+# 로그 및 업로드 디렉토리 생성 및 권한 설정
+RUN mkdir -p /app/logs /app/uploads/temp /app/uploads/storage && \
+    chown -R spring:spring /app
 
 # 빌드 스테이지에서 생성된 JAR 파일 복사
 COPY --from=builder /build/build/libs/*.jar app.jar
