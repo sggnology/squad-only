@@ -57,4 +57,4 @@ USER appuser:appgroup
 ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:+UseStringDeduplication"
 
 # 애플리케이션 실행
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["sh", "-c", "chown -R appuser:appgroup /app && exec java $JAVA_OPTS -jar /app/app.jar"]
