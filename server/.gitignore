@@ -39,3 +39,7 @@ out/
 ### Kotlin ###
 .kotlin
 /logs/
+
+### Upload Files ###
+/uploads/
+/my-app-logs/
