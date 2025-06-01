@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    include: windows
   docker:
     compose:
       enabled: false
@@ -38,3 +36,7 @@ app:
     username: admin
     password: '1234'  # 실제 환경에서는 보안을 위해 환경 변수 등으로 관리하세요
     name: squad-only
+
+file:
+  temp-dir: ./uploads/temp
+  storage-dir: ./uploads/storage
