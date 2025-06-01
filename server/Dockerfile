@@ -27,19 +27,17 @@ RUN ./gradlew build --no-daemon -x test
 # Stage 2: 런타임 스테이지 (Runtime Stage)
 FROM eclipse-temurin:21-jre-alpine AS runtime
 
-# spring 사용자/그룹 생성 (보안 강화)
-RUN addgroup -S appgroup && \
-    adduser -S appuser -G appgroup
-
 # 작업 디렉토리 설정
 WORKDIR /app
 
+# spring 사용자/그룹 생성 (UID/GID 1500 지정)
+RUN addgroup -g 1500 -S appgroup && \
+    adduser -u 1500 -S appuser -G appgroup
+
 # 로그 및 업로드 디렉토리 생성 및 권한 설정
-RUN mkdir -p /app/logs /app/uploads/temp /app/uploads/storage 
-
-RUN chown -R appuser:appgroup /app
-
-RUN chmod -R 755 /app
+RUN mkdir -p /app/logs /app/uploads/temp /app/uploads/storage && \
+    chown -R appuser:appgroup /app && \
+    chmod -R 755 /app
 
 # 빌드 스테이지에서 생성된 JAR 파일 복사
 COPY --from=builder /build/build/libs/*.jar app.jar
@@ -57,4 +55,4 @@ USER appuser:appgroup
 ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:+UseStringDeduplication"
 
 # 애플리케이션 실행
-ENTRYPOINT ["sh", "-c", "chown -R appuser:appgroup /app && exec java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
