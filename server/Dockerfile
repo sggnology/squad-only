@@ -35,9 +35,11 @@ RUN addgroup -S appgroup && \
 WORKDIR /app
 
 # 로그 및 업로드 디렉토리 생성 및 권한 설정
-RUN mkdir -p /app/logs /app/uploads/temp /app/uploads/storage && \
-    chown -R appuser:appgroup /app && \
-    chmod -R 755 /app
+RUN mkdir -p /app/logs /app/uploads/temp /app/uploads/storage 
+
+RUN chown -R appuser:appgroup /app
+
+RUN chmod -R 755 /app
 
 # 빌드 스테이지에서 생성된 JAR 파일 복사
 COPY --from=builder /build/build/libs/*.jar app.jar
