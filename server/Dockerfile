@@ -36,20 +36,20 @@ WORKDIR /app
 
 # 로그 및 업로드 디렉토리 생성 및 권한 설정
 RUN mkdir -p /app/logs /app/uploads/temp /app/uploads/storage && \
-    chown -R appgroup:appuser /app && \
+    chown -R appuser:appgroup /app && \
     chmod -R 755 /app
 
 # 빌드 스테이지에서 생성된 JAR 파일 복사
 COPY --from=builder /build/build/libs/*.jar app.jar
 
 # 소유권 변경 (spring 사용자가 app.jar 파일을 읽을 수 있도록)
-RUN chown appgroup:appuser app.jar
+RUN chown appuser:appgroup app.jar
 
 # 포트 노출
 EXPOSE 8080
 
 # 비 root 사용자로 전환
-USER appgroup:appuser
+USER appuser:appgroup
 
 # JVM 옵션 설정 (메모리 최적화)
 ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:+UseStringDeduplication"
