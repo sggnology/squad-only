@@ -26,7 +26,7 @@ import {
 import { selectAuth } from '../../store/authSlice';
 import LocationMap from '../../components/LocationMap';
 
-interface ContentResponseData {
+export interface ContentResponseData {
   idx: number;
   fileIds: number[];
   title: string;
@@ -85,8 +85,6 @@ function Detail() {
       fetchingRef.current = true;
       setLoading(true);
       try {
-        // Use axiosInstance and adjust the path if baseURL is set
-        // If baseURL is '/api', then the path here should be '/v1/content'
         const res = await axiosInstance.get<ContentResponseData>(`/content/${idx}`);
 
         // Type assertion for Spring pageable response

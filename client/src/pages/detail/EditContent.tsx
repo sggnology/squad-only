@@ -19,17 +19,7 @@ import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
 import { useAppSelector } from '../../store/hooks';
 import AddressSearch from '../../components/AddressSearch';
-
-interface ContentResponseData {
-  idx: number;
-  fileIds: number[];
-  title: string;
-  tags: string[];
-  location: string;
-  description: string;
-  createdAt: string;
-  registeredUserId?: string;
-}
+import { ContentResponseData } from './Detail';
 
 const EditContent: React.FC = () => {
   const { idx } = useParams<{ idx: string }>();
