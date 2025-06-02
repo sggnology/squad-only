@@ -59,6 +59,17 @@ function Home() {
   const size = 16; // Items per page
   const fetchingRef = useRef(false); // 중복 요청 방지 플래그
 
+  // 컴포넌트 마운트 시 스크롤 위치 초기화
+  useEffect(() => {
+    // 페이지 로드 시 스크롤을 맨 위로 이동
+    window.scrollTo(0, 0);
+    
+    // 브라우저의 자동 스크롤 복원 비활성화
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  }, []);
+
   useEffect(() => {
     const fetchContent = async () => {
       if (fetchingRef.current || last) return; // 이미 요청 중이거나 마지막 페이지면 무시
