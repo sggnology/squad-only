@@ -56,7 +56,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [last, setLast] = useState(false); // Track if last page
   const navigate = useNavigate();
-  const size = 10; // Items per page
+  const size = 16; // Items per page
   const fetchingRef = useRef(false); // 중복 요청 방지 플래그
 
   useEffect(() => {
