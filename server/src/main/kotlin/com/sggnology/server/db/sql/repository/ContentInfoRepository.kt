@@ -6,5 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 
 interface ContentInfoRepository
-    : JpaRepository<ContentInfo, Long>, ContentInquiryRepository
+    : JpaRepository<ContentInfo, Long>, ContentInquiryRepository {
+
+    fun findByIdxIn(idxs: List<Long>): List<ContentInfo>
+}
 

@@ -1,5 +1,8 @@
 package com.sggnology.server.endpoint.content
 
+import com.sggnology.server.feature.content.delete.data.dto.req.ContentDeleteReqDto
+import com.sggnology.server.feature.content.delete.data.model.ContentDeleteModel
+import com.sggnology.server.feature.content.delete.service.ContentDeleteService
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentsInquiryResDto
 import com.sggnology.server.feature.content.inquiry.data.model.ContentInquiryModel
@@ -24,7 +27,8 @@ import org.springframework.web.bind.annotation.*
 class ContentController(
     private val contentInquiryService: ContentInquiryService,
     private val contentRegistrationService: ContentRegistrationService,
-    private val contentUpdateService: ContentUpdateService
+    private val contentUpdateService: ContentUpdateService,
+    private val contentDeleteService: ContentDeleteService
 ){
 
     @Operation(
@@ -93,6 +97,24 @@ class ContentController(
                 location = contentUpdateReqDto.location,
                 tags = contentUpdateReqDto.tags,
                 newFileIds = contentUpdateReqDto.newFileIds
+            )
+        )
+    }
+
+    @Operation(
+        summary = "Delete content"
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successfully delete content"),
+        ApiResponse(responseCode = "400", description = "Bad request"),
+    ])
+    @DeleteMapping("")
+    fun delete(
+        @RequestBody contentDeleteReqDto: ContentDeleteReqDto
+    ) {
+        contentDeleteService.execute(
+            ContentDeleteModel.fromContentDeleteReqDto(
+                contentDeleteReqDto
             )
         )
     }
