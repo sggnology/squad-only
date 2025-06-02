@@ -11,7 +11,7 @@ services:
     ports:
       - "45432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - squad-only-network
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
     image: ghcr.io/sggnology/squad-only:latest
     container_name: squad-only-application
     environment:
-      SPRING_PROFILES_INCLUDE: linux
+      # SPRING_PROFILES_INCLUDE: linux
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/squad_only
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
@@ -36,9 +36,6 @@ services:
       - ./my-app-logs:/app/logs:Z
       - ./uploads:/app/uploads:Z
     user: "1500:1500"  # UID/GID 1500으로 실행 (Dockerfile과 일치)
-
-volumes:
-  postgres_data:
 
 networks:
   squad-only-network:
