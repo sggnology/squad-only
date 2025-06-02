@@ -2,6 +2,20 @@
 chcp 65001 > nul
 echo 📋 Squad Only 로그를 확인합니다...
 
+REM Docker Compose 파일 확인
+if not exist "docker-compose.yml" (
+    echo 📋 docker-compose.yml 파일을 복사합니다...
+    if exist "..\..\docker-compose.yml" (
+        copy "..\..\docker-compose.yml" "docker-compose.yml" > nul
+        echo ✅ docker-compose.yml 파일이 복사되었습니다.
+    ) else (
+        echo ❌ docker-compose.yml 파일을 찾을 수 없습니다.
+        echo    서버 루트 디렉토리에서 실행하거나 docker-compose.yml이 있는지 확인하세요.
+        pause
+        exit /b 1
+    )
+)
+
 REM 파라미터 확인
 if "%1"=="app" goto :app_logs
 if "%1"=="application" goto :app_logs

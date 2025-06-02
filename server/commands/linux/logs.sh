@@ -3,6 +3,19 @@
 # Squad Only 로그 확인 스크립트
 echo "📋 Squad Only 로그를 확인합니다..."
 
+# Docker Compose 파일 확인
+if [ ! -f "docker-compose.yml" ]; then
+    echo "📋 docker-compose.yml 파일을 복사합니다..."
+    if [ -f "../../docker-compose.yml" ]; then
+        cp "../../docker-compose.yml" "docker-compose.yml"
+        echo "✅ docker-compose.yml 파일이 복사되었습니다."
+    else
+        echo "❌ docker-compose.yml 파일을 찾을 수 없습니다."
+        echo "   서버 루트 디렉토리에서 실행하거나 docker-compose.yml이 있는지 확인하세요."
+        exit 1
+    fi
+fi
+
 # 파라미터 확인
 if [ "$1" = "app" ] || [ "$1" = "application" ]; then
     echo "🔍 애플리케이션 로그를 확인합니다..."

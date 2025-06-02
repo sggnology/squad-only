@@ -1,6 +1,21 @@
 @echo off
 chcp 65001 > nul
 echo 🧹 Squad Only Docker 환경을 완전히 정리합니다...
+
+REM Docker Compose 파일 확인
+if not exist "docker-compose.yml" (
+    echo 📋 docker-compose.yml 파일을 복사합니다...
+    if exist "..\..\docker-compose.yml" (
+        copy "..\..\docker-compose.yml" "docker-compose.yml" > nul
+        echo ✅ docker-compose.yml 파일이 복사되었습니다.
+    ) else (
+        echo ❌ docker-compose.yml 파일을 찾을 수 없습니다.
+        echo    서버 루트 디렉토리에서 실행하거나 docker-compose.yml이 있는지 확인하세요.
+        pause
+        exit /b 1
+    )
+)
+
 echo.
 echo ⚠️  경고: 이 작업은 모든 데이터를 삭제합니다!
 echo    - PostgreSQL 데이터베이스

@@ -3,6 +3,19 @@
 # Squad Only Docker 중지 스크립트
 echo "🛑 Squad Only Docker 환경을 중지합니다..."
 
+# Docker Compose 파일 확인
+if [ ! -f "docker-compose.yml" ]; then
+    echo "📋 docker-compose.yml 파일을 복사합니다..."
+    if [ -f "../../docker-compose.yml" ]; then
+        cp "../../docker-compose.yml" "docker-compose.yml"
+        echo "✅ docker-compose.yml 파일이 복사되었습니다."
+    else
+        echo "❌ docker-compose.yml 파일을 찾을 수 없습니다."
+        echo "   서버 루트 디렉토리에서 실행하거나 docker-compose.yml이 있는지 확인하세요."
+        exit 1
+    fi
+fi
+
 # 컨테이너 중지 및 제거
 echo "🐳 Docker 컨테이너를 중지합니다..."
 docker-compose down
