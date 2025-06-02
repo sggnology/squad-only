@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Skeleton,
 } from '@mui/material';
-import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { Save as SaveIcon, Cancel as CancelIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
 import { useAppSelector } from '../../store/hooks';
 import AddressSearch from '../../components/AddressSearch';
@@ -24,9 +24,9 @@ import { ContentResponseData } from './Detail';
 const EditContent: React.FC = () => {
   const { idx } = useParams<{ idx: string }>();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  const [loading, setLoading] = useState(true);
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // 폼 상태
@@ -181,9 +181,39 @@ const EditContent: React.FC = () => {
       setSaving(false);
     }
   };
-
   const handleCancel = () => {
     navigate(`/detail/${idx}`);
+  };  const handleDelete = async () => {
+    if (!window.confirm('정말로 이 컨텐츠를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      setError(null);
+
+      // ContentDeleteReqDto 형식으로 요청
+      const deleteData = {
+        idxs: [Number(idx)]
+      };
+
+      await axiosInstance.request({
+        method: 'DELETE',
+        url: '/content',
+        data: deleteData,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // 성공적으로 삭제되면 홈으로 이동
+      navigate('/');
+    } catch (err) {
+      setError('컨텐츠 삭제 중 오류가 발생했습니다.');
+      console.error('Error deleting content:', err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -357,25 +387,37 @@ const EditContent: React.FC = () => {
                 sx={{ mr: 1, mb: 1 }}
               />
             ))}
-          </Box>
-
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 4 }}>
+          </Box>          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+            {/* 삭제 버튼 (좌측) */}
             <Button
               variant="outlined"
-              onClick={handleCancel}
-              startIcon={<CancelIcon />}
-              disabled={saving}
+              color="error"
+              onClick={handleDelete}
+              startIcon={deleting ? <CircularProgress size={20} /> : <DeleteIcon />}
+              disabled={saving || deleting}
             >
-              취소
+              {deleting ? '삭제 중...' : '삭제'}
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleSave}
-              startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-              disabled={saving || !title.trim() || !location.trim()}
-            >
-              {saving ? '저장 중...' : '저장'}
-            </Button>
+
+            {/* 취소, 저장 버튼들 (우측) */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={handleCancel}
+                startIcon={<CancelIcon />}
+                disabled={saving || deleting}
+              >
+                취소
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleSave}
+                startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+                disabled={saving || deleting || !title.trim() || !location.trim()}
+              >
+                {saving ? '저장 중...' : '저장'}
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Paper>
