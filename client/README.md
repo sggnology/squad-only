@@ -1,54 +1,42 @@
-# React + TypeScript + Vite
+# Squad Only Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript 기반의 Squad Only 프론트엔드 클라이언트입니다.
 
-Currently, two official plugins are available:
+## 개발 환경 설정
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 의존성 설치
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 개발 서버 실행
+```bash
+npm run dev
 ```
+
+### 빌드
+```bash
+npm run build
+```
+
+## 기술 스택
+
+- **React** - UI 프레임워크
+- **TypeScript** - 타입 안전성
+- **Vite** - 빌드 도구
+- **Tailwind CSS** - 스타일링
+- **Redux Toolkit** - 상태 관리
+
+## 주요 디렉토리
+
+- `src/components/` - 재사용 가능한 컴포넌트
+- `src/pages/` - 페이지별 컴포넌트
+- `src/store/` - Redux 상태 관리
+- `src/utils/` - 유틸리티 함수
+- `src/contexts/` - React Context
+
+## 빌드 및 배포
+
+클라이언트는 빌드 시 서버의 `src/main/resources/static` 디렉토리에 자동으로 복사되어 Spring Boot 서버를 통해 서빙됩니다.
+
+자세한 내용은 [메인 README](../README.md)를 참조하세요.
