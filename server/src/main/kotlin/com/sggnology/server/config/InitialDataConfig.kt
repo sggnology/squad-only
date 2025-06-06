@@ -7,7 +7,7 @@ import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.repository.ConfigInfoRepository
 import com.sggnology.server.db.sql.repository.RoleInfoRepository
 import com.sggnology.server.db.sql.repository.UserInfoRepository
-import com.sggnology.server.util.logger
+import com.sggnology.server.common.util.logger
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

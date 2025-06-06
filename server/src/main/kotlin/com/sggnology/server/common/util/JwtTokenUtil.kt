@@ -1,4 +1,4 @@
-package com.sggnology.server.util
+package com.sggnology.server.common.util
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.util.StringUtils

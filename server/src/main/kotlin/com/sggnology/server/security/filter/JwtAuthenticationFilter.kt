@@ -2,7 +2,7 @@ package com.sggnology.server.security.filter
 
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.security.JwtTokenProvider
-import com.sggnology.server.util.JwtTokenUtil
+import com.sggnology.server.common.util.JwtTokenUtil
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

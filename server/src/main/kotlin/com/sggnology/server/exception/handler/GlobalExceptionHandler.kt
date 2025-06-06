@@ -1,6 +1,6 @@
 package com.sggnology.server.exception.handler
 
-import com.sggnology.server.util.logger
+import com.sggnology.server.common.util.logger
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
