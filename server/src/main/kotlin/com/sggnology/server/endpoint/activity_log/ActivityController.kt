@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/activity")
+@RequestMapping("/api/v1/activity-log")
 @Tag(name = "활동 기록")
 class ActivityController(
     private val activityLogInquiryService: ActvityLogInquiryService
