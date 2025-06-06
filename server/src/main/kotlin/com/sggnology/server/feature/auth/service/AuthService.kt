@@ -1,13 +1,16 @@
 package com.sggnology.server.feature.auth.service
 
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
+import com.sggnology.server.feature.activity_log.handler.event.LoginLogEvent
 import com.sggnology.server.feature.auth.data.dto.res.AuthIdentificationMeResDto
 import com.sggnology.server.feature.auth.data.model.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.security.JwtTokenProvider
-import com.sggnology.server.util.JwtTokenUtil
+import com.sggnology.server.common.util.JwtTokenUtil
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -19,7 +22,8 @@ import java.time.LocalDateTime
 class AuthService(
     private val userInfoRepository: UserInfoRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtTokenProvider: JwtTokenProvider
+    private val jwtTokenProvider: JwtTokenProvider,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @Transactional
@@ -36,11 +40,19 @@ class AuthService(
         val authorities = userInfo.getRoleList().map { SimpleGrantedAuthority(it) }
 
         val token = jwtTokenProvider.createToken(userInfo.userId, authorities)
-
         userInfoRepository.save(
             userInfo.apply {
                 lastLoginAt = LocalDateTime.now()
             }
+        )
+
+        // 로그인 이벤트 퍼블리싱
+        eventPublisher.publishEvent(
+            LoginLogEvent(
+                userId = userInfo.userId,
+                username = userInfo.nickname ?: userInfo.name,
+                ip = ClientIPHolder.get()
+            )
         )
 
         return AuthLoginResDto(

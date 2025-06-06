@@ -1,17 +1,21 @@
 package com.sggnology.server.feature.content.delete.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
+import com.sggnology.server.feature.activity_log.handler.event.ContentDeleteLogEvent
 import com.sggnology.server.feature.content.delete.data.model.ContentDeleteModel
-import com.sggnology.server.util.logger
+import com.sggnology.server.common.util.logger
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ContentDeleteService(
-    private val contentInfoRepository: ContentInfoRepository
+    private val contentInfoRepository: ContentInfoRepository,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @WithUserInfo
@@ -38,17 +42,26 @@ class ContentDeleteService(
                     )
                 }
             }
-        }
-
-        // 컨텐츠 삭제
-        contentInfoRepository.saveAll(
+        }        // 컨텐츠 삭제
+        val deletedContents = contentInfoRepository.saveAll(
             contentInfos.map {
                 it.isDeleted = true
-
                 it
             }
         )
 
         logger.info("사용자: ${userInfo.idx} 가, 컨텐츠 IDs: ${contentDeleteModel.idxs} 를 삭제했습니다.")
+
+        // 각 삭제된 컨텐츠에 대해 삭제 이벤트 발행
+        deletedContents.forEach { contentInfo ->
+            eventPublisher.publishEvent(
+                ContentDeleteLogEvent(
+                    userId = userInfo.userId,
+                    username = userInfo.name,
+                    contentIds = contentInfos.map { it.idx },
+                    ip = ClientIPHolder.get()
+                )
+            )
+        }
     }
 }

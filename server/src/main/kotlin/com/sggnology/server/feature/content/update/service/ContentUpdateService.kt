@@ -1,17 +1,20 @@
 package com.sggnology.server.feature.content.update.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.entity.ContentTagInfo
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
 import com.sggnology.server.db.sql.repository.TagInfoRepository
+import com.sggnology.server.feature.activity_log.handler.event.ContentUpdateLogEvent
 import com.sggnology.server.feature.content.update.data.model.ContentUpdateModel
 import com.sggnology.server.feature.file.upload.data.model.FileAttachToContentModel
 import com.sggnology.server.feature.file.upload.data.model.FileMoveToStorageModel
 import com.sggnology.server.feature.file.upload.service.FileUploadService
 import com.sggnology.server.feature.tag.data.dto.req.TagRegistrationReqDto
 import com.sggnology.server.feature.tag.domain.TagManager
-import com.sggnology.server.util.logger
+import com.sggnology.server.common.util.logger
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional
 class ContentUpdateService(
     private val contentInfoRepository: ContentInfoRepository,
     private val tagInfoRepository: TagInfoRepository,
-    private val fileUploadService: FileUploadService
+    private val fileUploadService: FileUploadService,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @WithUserInfo
@@ -92,14 +96,23 @@ class ContentUpdateService(
                     )
                 }
             )
-        }
-
-        // 컨텐츠 수정 정보 로깅
+        }        // 컨텐츠 수정 정보 로깅
         logger.info(
             "컨텐츠 수정: IDX='${contentInfo.idx}', Title='${contentInfo.title}', 사용자 ='${userInfo.userId}' "
         )
 
         // 컨텐츠 저장
         contentInfoRepository.save(contentInfo)
+
+        // 컨텐츠 수정 이벤트 발행
+        eventPublisher.publishEvent(
+            ContentUpdateLogEvent(
+                userId = userInfo.userId,
+                username = userInfo.name,
+                contentIdx = contentInfo.idx,
+                contentTitle = contentInfo.title,
+                ip = ClientIPHolder.get()
+            )
+        )
     }
 }

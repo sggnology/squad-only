@@ -1,20 +1,22 @@
 package com.sggnology.server.feature.content.registration.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.entity.ContentInfo
 import com.sggnology.server.db.sql.entity.ContentTagInfo
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
 import com.sggnology.server.db.sql.repository.TagInfoRepository
 import com.sggnology.server.db.sql.repository.UserInfoRepository
+import com.sggnology.server.feature.activity_log.handler.event.ContentCreateLogEvent
 import com.sggnology.server.feature.content.registration.data.dto.ContentRegistrationReqDto
 import com.sggnology.server.feature.file.upload.data.model.FileAttachToContentModel
 import com.sggnology.server.feature.file.upload.data.model.FileMoveToStorageModel
 import com.sggnology.server.feature.file.upload.service.FileUploadService
 import com.sggnology.server.feature.tag.data.dto.req.TagRegistrationReqDto
 import com.sggnology.server.feature.tag.domain.TagManager
-import com.sggnology.server.util.logger
-import org.springframework.security.core.context.SecurityContextHolder
+import com.sggnology.server.common.util.logger
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,7 +25,8 @@ class ContentRegistrationService(
     private val contentInfoRepository: ContentInfoRepository,
     private val userInfoRepository: UserInfoRepository,
     private val tagInfoRepository: TagInfoRepository,
-    private val fileUploadService: FileUploadService
+    private val fileUploadService: FileUploadService,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @WithUserInfo
@@ -70,11 +73,20 @@ class ContentRegistrationService(
                     tag = combinedTagInfo
                 )
             }
-        )
-
-        // 컨텐츠 등록에 대한 정보 로깅
+        )        // 컨텐츠 등록에 대한 정보 로깅
         logger.info("Registering new content: ${newContentInfo.title} by user: ${userInfo.userId}(idx: ${userInfo.idx})")
 
         contentInfoRepository.save(newContentInfo)
+
+        // 컨텐츠 생성 이벤트 발행
+        eventPublisher.publishEvent(
+            ContentCreateLogEvent(
+                userId = userInfo.userId,
+                username = userInfo.name,
+                contentIdx = newContentInfo.idx,
+                contentTitle = newContentInfo.title,
+                ip = ClientIPHolder.get()
+            )
+        )
     }
 }
