@@ -1,4 +1,4 @@
-package com.sggnology.server.feature.activity_log.type
+package com.sggnology.server.common.constants
 
 enum class ActivityLogType {
     LOGIN,

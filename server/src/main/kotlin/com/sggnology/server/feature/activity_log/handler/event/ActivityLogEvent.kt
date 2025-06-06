@@ -1,7 +1,7 @@
 package com.sggnology.server.feature.activity_log.handler.event
 
 import com.sggnology.server.feature.activity_log.registration.data.model.RegisterActivityLogModel
-import com.sggnology.server.feature.activity_log.type.ActivityLogType
+import com.sggnology.server.common.constants.ActivityLogType
 
 /**
  * 활동 추적을 위한 기본 이벤트 클래스

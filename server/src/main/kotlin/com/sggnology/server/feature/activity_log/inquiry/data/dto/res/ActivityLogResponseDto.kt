@@ -1,7 +1,7 @@
 package com.sggnology.server.feature.activity_log.inquiry.data.dto.res
 
 import com.sggnology.server.db.sql.entity.ActivityLogInfo
-import com.sggnology.server.feature.activity_log.type.ActivityLogType
+import com.sggnology.server.common.constants.ActivityLogType
 import java.time.LocalDateTime
 
 data class ActivityLogResponseDto(

@@ -1,7 +1,7 @@
 package com.sggnology.server.feature.activity_log.registration.data.model
 
 import com.sggnology.server.db.sql.entity.ActivityLogInfo
-import com.sggnology.server.feature.activity_log.type.ActivityLogType
+import com.sggnology.server.common.constants.ActivityLogType
 
 data class RegisterActivityLogModel(
     val userId: String,

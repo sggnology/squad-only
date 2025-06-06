@@ -1,6 +1,6 @@
 package com.sggnology.server.feature.activity_log.handler.event
 
-import com.sggnology.server.feature.activity_log.type.ActivityLogType
+import com.sggnology.server.common.constants.ActivityLogType
 
 /**
  * 컨텐츠 수정 이벤트

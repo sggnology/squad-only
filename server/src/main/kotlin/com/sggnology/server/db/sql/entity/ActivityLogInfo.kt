@@ -1,7 +1,7 @@
 package com.sggnology.server.db.sql.entity
 
 import com.sggnology.server.db.sql.base.BaseTimeEntity
-import com.sggnology.server.feature.activity_log.type.ActivityLogType
+import com.sggnology.server.common.constants.ActivityLogType
 import jakarta.persistence.*
 
 @Entity
