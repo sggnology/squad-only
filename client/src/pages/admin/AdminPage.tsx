@@ -14,6 +14,7 @@ import {
   Dashboard as DashboardIcon 
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import ActivityLogComponent from '../../components/ActivityLog/ActivityLogComponent';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -79,15 +80,15 @@ function AdminPage() {
         </CardContent>
         </Card>
       </Grid>
-      </Grid>
-
+      </Grid>      
       <Paper sx={{ mt: 8, p: 6 }}>
-      <Typography variant="h5" sx={{ mb: 4 }}>
-        최근 활동
-      </Typography>
-      <Typography variant="body1" color="textSecondary">
-        최근 사용자 활동 및 시스템 로그가 여기에 표시됩니다.
-      </Typography>
+        <Typography variant="h5" sx={{ mb: 4 }}>
+          최근 활동
+        </Typography>
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 4 }}>
+          모든 사용자의 최근 활동 및 시스템 로그를 확인할 수 있습니다.
+        </Typography>
+        <ActivityLogComponent showUserId={true} pageSize={15} />
       </Paper>
     </Container>
   );

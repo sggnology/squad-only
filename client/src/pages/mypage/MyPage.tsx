@@ -18,7 +18,9 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  Tabs,
+  Tab
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -30,11 +32,13 @@ import {
   Lock as LockIcon,
   Visibility,
   VisibilityOff,
-  Close as CloseIcon
+  Close as CloseIcon,
+  History as HistoryIcon
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectUser, updateUserProfile } from '../../store/authSlice';
 import axiosInstance from '../../utils/axiosInstance';
+import ActivityLogComponent from '../../components/ActivityLog/ActivityLogComponent';
 
 interface Profile {
   userId: string;
@@ -62,6 +66,9 @@ function MyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // 탭 상태
+  const [activeTab, setActiveTab] = useState(0);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -346,15 +353,22 @@ function MyPage() {
         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
-      )}
-
-      {successMessage && (
+      )}      {successMessage && (
         <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccessMessage('')}>
           {successMessage}
         </Alert>
       )}
 
-      {profile && (
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} aria-label="마이페이지 탭">
+          <Tab label="프로필 정보" icon={<PersonIcon />} iconPosition="start" />
+          <Tab label="최근 활동" icon={<HistoryIcon />} iconPosition="start" />
+        </Tabs>
+      </Box>
+
+      {activeTab === 0 && (
+        <Box>
+          {profile && (
         <Card>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -455,9 +469,7 @@ function MyPage() {
             </Box>
           </CardActions>
         </Card>
-      )}
-
-      {/* 사용자 통계 및 추가 정보 섹션 */}
+      )}      {/* 사용자 통계 및 추가 정보 섹션 */}
       <Card sx={{ mt: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
@@ -483,8 +495,27 @@ function MyPage() {
               <Typography color="text.secondary">계정 상태:</Typography>
               <Chip label="활성" color="success" size="small" />
             </Box>
-          </Box>        </CardContent>
+          </Box>        
+        </CardContent>
       </Card>
+        </Box>
+      )}
+
+      {activeTab === 1 && (
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <HistoryIcon color="primary" />
+              최근 활동
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              로그인, 콘텐츠 등록/수정/삭제, 프로필 수정 등의 활동 기록을 확인할 수 있습니다.
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <ActivityLogComponent userId={currentUser?.userId} pageSize={15} />
+          </CardContent>
+        </Card>
+      )}
 
       {/* 비밀번호 변경 모달 */}
       <Dialog 
