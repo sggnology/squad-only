@@ -21,7 +21,8 @@ class TagInquiryService(
         )
 
         val pagedResult = tagInfoRepository.inquire(
-            pageable
+            pageable,
+            tagInquireModel.search
         )
         val formattedResult = pagedResult.map {
             TagInquiryResDto.fromTagInfo(it)

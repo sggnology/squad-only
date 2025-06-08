@@ -22,12 +22,14 @@ class TagController(
     @GetMapping("")
     fun inquire(
         @RequestParam page: Int,
-        @RequestParam size: Int
+        @RequestParam size: Int,
+        @RequestParam search: String? = null
     ): PagedModel<TagInquiryResDto> {
        return tagInquiryService.execute(
            TagInquireModel(
                page = page,
-               size = size
+               size = size,
+               search = search
            )
         )
     }

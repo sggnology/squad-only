@@ -7,5 +7,6 @@ import org.springframework.data.domain.Pageable
 interface TagInquiryRepository {
     fun inquire(
         pageable: Pageable,
+        search: String?
     ): Page<TagInfo>
 }

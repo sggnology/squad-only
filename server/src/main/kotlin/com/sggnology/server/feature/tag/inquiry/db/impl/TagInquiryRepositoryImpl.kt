@@ -14,16 +14,22 @@ class TagInquiryRepositoryImpl(
 
     private val tagInfo = QTagInfo.tagInfo
 
-    override fun inquire(pageable: Pageable): Page<TagInfo> {
+    override fun inquire(pageable: Pageable, search: String?): Page<TagInfo> {
 
         val contentQuery = queryFactory
             .selectFrom(tagInfo)
             .orderBy(tagInfo.createdAt.desc(), tagInfo.idx.desc())
+            .where(
+                tagInfo.name.containsIgnoreCase(search ?: "")
+            )
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
 
         val countQuery = queryFactory
             .select(tagInfo.count())
+            .where(
+                tagInfo.name.containsIgnoreCase(search ?: "")
+            )
             .from(tagInfo)
 
         return PageImpl(
