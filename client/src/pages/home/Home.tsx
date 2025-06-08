@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Container,
   Card,
@@ -16,12 +16,11 @@ import {
   IconButton,
   Autocomplete,
   Button,
-  Divider,
   Alert
 } from '@mui/material';
-import { 
-  Add as AddIcon, 
-  Person as PersonIcon, 
+import {
+  Add as AddIcon,
+  Person as PersonIcon,
   LocationOn as LocationIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
@@ -63,47 +62,99 @@ interface PageContent {
   page: Page;
 }
 
+interface TagResponseData {
+  name: string;
+}
+
+interface TagPageContent {
+  content: TagResponseData[];
+  page: Page;
+}
+
 function Home() {
   const [content, setContent] = useState<Content[]>([]);
   const [page, setPage] = useState(0); // Spring pageable starts at 0
   const [loading, setLoading] = useState(false);
   const [last, setLast] = useState(false); // Track if last page
   const [error, setError] = useState<string | null>(null);
-  
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchInput, setSearchInput] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  
+
+  // Tag pagination states - 더 이상 사용하지 않음
+  const [tagLoading, setTagLoading] = useState(false);
+
   const navigate = useNavigate();
   const size = 16; // Items per page
+  const tagSearchSize = 5; // 실시간 검색 시 최대 태그 개수
   const fetchingRef = useRef(false); // 중복 요청 방지 플래그
+  const tagSearchRef = useRef<number | null>(null); // debounce를 위한 ref
 
   // 컴포넌트 마운트 시 스크롤 위치 초기화
   useEffect(() => {
     // 페이지 로드 시 스크롤을 맨 위로 이동
     window.scrollTo(0, 0);
-    
+
     // 브라우저의 자동 스크롤 복원 비활성화
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
-  }, []);  useEffect(() => {
+  }, []);
+
+  // 태그 실시간 검색 함수
+  const searchTags = useCallback(async (searchTerm: string) => {
+    if (!searchTerm.trim()) {
+      setAvailableTags([]);
+      return;
+    }
+
+    setTagLoading(true);
+    try {
+      const res = await axiosInstance.get<TagPageContent>('/tag', {
+        params: {
+          page: 0,
+          size: tagSearchSize,
+          search: searchTerm.trim()
+        }
+      });
+
+      const responseData = res.data.content;
+      const newTags = responseData.map(item => item.name);
+      setAvailableTags(newTags);
+    } catch (e) {
+      console.error('Error searching tags:', e);
+      setAvailableTags([]);
+    } finally {
+      setTagLoading(false);
+    }
+  }, [tagSearchSize]);
+
+  // debounced 태그 검색
+  const debouncedSearchTags = useCallback((searchTerm: string) => {
+    if (tagSearchRef.current) {
+      clearTimeout(tagSearchRef.current);
+    }
+
+    tagSearchRef.current = window.setTimeout(() => {
+      searchTags(searchTerm);
+    }, 300); // 300ms debounce
+  }, [searchTags]);
+
+  useEffect(() => {
     const fetchContent = async () => {
       if (fetchingRef.current || last) return; // 이미 요청 중이거나 마지막 페이지면 무시
       fetchingRef.current = true;
       setLoading(true);
       try {
-        // Use axiosInstance and adjust the path if baseURL is set
-        // If baseURL is '/api', then the path here should be '/v1/content'
         const res = await axiosInstance.get<PageContent>('/content', {
-          params: { 
-            page, 
+          params: {
+            page,
             size,
             search: searchQuery || undefined,
-            tags: selectedTags.length > 0 ? selectedTags.join(',') : undefined
+            tags: selectedTags.length > 0 ? selectedTags.join(",") : undefined
           }
         });
         // Type assertion for Spring pageable response
@@ -121,17 +172,9 @@ function Home() {
         }));
 
         const isLast = responsePage.number === responsePage.totalPages - 1;
-
         setContent((prev) => [...prev, ...newContent]);
         setLast(isLast);
-        
-        // Extract unique tags from content for autocomplete
-        const allTags = newContent.flatMap(item => item.tags);
-        setAvailableTags(prev => {
-          const uniqueTags = [...new Set([...prev, ...allTags])];
-          return uniqueTags.sort();
-        });
-        
+
         setError(null);
       } catch (e) {
         // The global error handler will display the error.
@@ -148,6 +191,7 @@ function Home() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchQuery, selectedTags]); // Added searchQuery and selectedTags as dependencies
+
   const handleScroll = () => {
     if (
       window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 &&
@@ -187,9 +231,10 @@ function Home() {
     setSearchQuery('');
     resetPagination();
   };
-
   const handleTagSelection = (newTags: string[]) => {
-    setSelectedTags(newTags);
+    // freeSolo 모드에서는 사용자가 직접 입력한 태그도 포함될 수 있음
+    const filteredTags = newTags.filter(tag => tag.trim() !== '').map(tag => tag.trim());
+    setSelectedTags(filteredTags);
     resetPagination();
   };
 
@@ -212,7 +257,8 @@ function Home() {
     setTagInput('');
     resetPagination();
   };
-    return (
+
+  return (
     <Container maxWidth="xl" sx={{ py: 2, minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
       {/* Search and Filter Section */}
       <Paper elevation={2} sx={{ p: 3, mb: 3, backgroundColor: 'white' }}>
@@ -220,7 +266,7 @@ function Home() {
           <FilterListIcon sx={{ mr: 1 }} />
           검색 및 필터
         </Typography>
-        
+
         {/* Search Bar */}
         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <TextField
@@ -230,41 +276,45 @@ function Home() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={handleSearchKeyDown}
-            InputProps={{
-              endAdornment: (
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  {searchInput && (
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {searchInput && (
+                      <IconButton
+                        size="small"
+                        onClick={handleClearSearch}
+                        sx={{ color: 'text.secondary' }}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    )}
                     <IconButton
-                      size="small"
-                      onClick={handleClearSearch}
-                      sx={{ color: 'text.secondary' }}
+                      onClick={handleSearch}
+                      color="primary"
+                      disabled={loading}
                     >
-                      <ClearIcon />
+                      <SearchIcon />
                     </IconButton>
-                  )}
-                  <IconButton
-                    onClick={handleSearch}
-                    color="primary"
-                    disabled={loading}
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                </Box>
-              ),
+                  </Box>
+                ),
+              }
             }}
           />
-        </Box>
-
-        {/* Tag Filter */}
+        </Box>        {/* Tag Filter */}
         <Box sx={{ mb: 2 }}>
           <Autocomplete
             multiple
+            freeSolo
             options={availableTags}
             value={selectedTags}
             onChange={(_, newValue) => handleTagSelection(newValue)}
             inputValue={tagInput}
-            onInputChange={(_, newInputValue) => setTagInput(newInputValue)}
-            renderTags={(value, getTagProps) =>
+            onInputChange={(_, newInputValue) => {
+              setTagInput(newInputValue);
+              debouncedSearchTags(newInputValue);
+            }}
+            renderValue={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
                   variant="outlined"
@@ -282,14 +332,33 @@ function Home() {
                 />
               ))
             }
+            renderOption={(props, option) => (
+              <li {...props} key={option}>
+                <Typography>{option}</Typography>
+              </li>
+            )}
             renderInput={(params) => (
               <TextField
                 {...params}
                 variant="outlined"
-                placeholder="태그로 필터링..."
+                placeholder="태그로 필터링... (입력하여 검색)"
                 label="태그 필터"
+                slotProps={{
+                  input: {
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {tagLoading && <CircularProgress color="inherit" size={20} />}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  },
+                }}
               />
             )}
+            loading={tagLoading}
+            loadingText="태그 검색 중..."
+            noOptionsText={tagInput.trim() ? "검색 결과가 없습니다" : "태그를 입력하여 검색하세요"}
             sx={{ mb: 1 }}
           />
         </Box>
@@ -315,7 +384,7 @@ function Home() {
               />
             )}
           </Box>
-          
+
           {(searchQuery || selectedTags.length > 0) && (
             <Button
               variant="outlined"
@@ -342,9 +411,10 @@ function Home() {
           display: 'flex',
           flexWrap: 'wrap',
           gap: 3,
-          justifyContent: { xs: 'center', lg: 'start' },
+          justifyContent: 'center',
         }}
-      >        {content.map((item) => (
+      >
+        {content.map((item) => (
           <Card
             key={item.idx}
             sx={{
@@ -456,13 +526,13 @@ function Home() {
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 6 }}>
           <Paper sx={{ p: 4, textAlign: 'center', backgroundColor: '#f9f9f9' }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchQuery || selectedTags.length > 0 
-                ? '검색 결과가 없습니다' 
+              {searchQuery || selectedTags.length > 0
+                ? '검색 결과가 없습니다'
                 : '등록된 콘텐츠가 없습니다'
               }
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchQuery || selectedTags.length > 0 
+              {searchQuery || selectedTags.length > 0
                 ? '다른 검색어나 태그로 시도해보세요'
                 : '첫 번째 콘텐츠를 등록해보세요!'
               }
