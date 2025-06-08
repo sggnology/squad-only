@@ -16,20 +16,18 @@ class TagInquiryRepositoryImpl(
 
     override fun inquire(pageable: Pageable, search: String?): Page<TagInfo> {
 
+        val searchCondition = if (search.isNullOrBlank()) null else tagInfo.name.containsIgnoreCase(search)
+
         val contentQuery = queryFactory
             .selectFrom(tagInfo)
             .orderBy(tagInfo.createdAt.desc(), tagInfo.idx.desc())
-            .where(
-                tagInfo.name.containsIgnoreCase(search ?: "")
-            )
+            .where(searchCondition)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
 
         val countQuery = queryFactory
             .select(tagInfo.count())
-            .where(
-                tagInfo.name.containsIgnoreCase(search ?: "")
-            )
+            .where(searchCondition)
             .from(tagInfo)
 
         return PageImpl(

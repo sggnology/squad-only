@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/api/v1/tag")
 @Tag(name = "Tag", description = "태그 관련 API")
 class TagController(
     private val tagInquiryService: TagInquiryService
