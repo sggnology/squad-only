@@ -2,8 +2,8 @@ package com.sggnology.server.feature.tag.domain
 
 import com.sggnology.server.db.sql.entity.TagInfo
 import com.sggnology.server.db.sql.repository.TagInfoRepository
-import com.sggnology.server.feature.tag.data.model.TagRegisterModel
-import com.sggnology.server.feature.tag.data.model.TagRegistrationModel
+import com.sggnology.server.feature.tag.domain.data.model.TagRegisterModel
+import com.sggnology.server.feature.tag.domain.data.model.TagRegistrationModel
 
 class TagManager(
     private val tagInfoRepository: TagInfoRepository

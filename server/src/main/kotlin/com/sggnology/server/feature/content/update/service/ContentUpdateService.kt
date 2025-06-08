@@ -11,7 +11,7 @@ import com.sggnology.server.feature.content.update.data.model.ContentUpdateModel
 import com.sggnology.server.feature.file.upload.data.model.FileAttachToContentModel
 import com.sggnology.server.feature.file.upload.data.model.FileMoveToStorageModel
 import com.sggnology.server.feature.file.upload.service.FileUploadService
-import com.sggnology.server.feature.tag.data.dto.req.TagRegistrationReqDto
+import com.sggnology.server.feature.tag.domain.data.dto.req.TagRegistrationReqDto
 import com.sggnology.server.feature.tag.domain.TagManager
 import com.sggnology.server.common.util.logger
 import org.springframework.context.ApplicationEventPublisher

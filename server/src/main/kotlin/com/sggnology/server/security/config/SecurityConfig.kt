@@ -42,6 +42,7 @@ class SecurityConfig(
                     // 콘텐츠 조회 엔드포인트는 인증 없이 접근 가능
                     .requestMatchers(HttpMethod.GET, "/api/v1/content").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/content/*").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/tag").permitAll()
 
                     // 콘텐츠 조회시 사용되는 파일 조회 접근 가능
                     .requestMatchers(HttpMethod.GET, "/api/v1/file/*").permitAll()
