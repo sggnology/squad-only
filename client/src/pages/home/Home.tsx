@@ -342,7 +342,7 @@ function Home() {
           display: 'flex',
           flexWrap: 'wrap',
           gap: 3,
-          justifyContent: 'start',
+          justifyContent: { xs: 'center', lg: 'start' },
         }}
       >        {content.map((item) => (
           <Card
