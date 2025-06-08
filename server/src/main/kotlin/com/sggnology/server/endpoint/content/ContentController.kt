@@ -84,7 +84,8 @@ class ContentController(
         ApiResponse(responseCode = "400", description = "Bad request"),
         ApiResponse(responseCode = "403", description = "Forbidden - No permission to update this content"),
         ApiResponse(responseCode = "404", description = "Content not found"),
-    ])    @PutMapping("/{idx}")
+    ])
+    @PutMapping("/{idx}")
     fun update(
         @PathVariable("idx") idx: Long,
         @Valid @RequestBody contentUpdateReqDto: ContentUpdateReqDto
