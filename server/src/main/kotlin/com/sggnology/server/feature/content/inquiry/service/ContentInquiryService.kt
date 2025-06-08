@@ -30,7 +30,11 @@ class ContentInquiryService(
             Sort.by(Sort.Direction.DESC, "createdAt")
         )
 
-        val pagedResult = contentInfoRepository.inquire(pageInfo)
+        val pagedResult = contentInfoRepository.inquire(
+            pageInfo,
+            contentsInquiryModel.search,
+            contentsInquiryModel.tags
+        )
         val formattedResult = pagedResult.map { ContentsInquiryResDto.fromContentInfo(it) }
 
         return PagedModel(formattedResult)

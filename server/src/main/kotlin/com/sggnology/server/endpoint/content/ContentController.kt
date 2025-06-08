@@ -55,10 +55,17 @@ class ContentController(
     @GetMapping("")
     fun inquireContents(
         @RequestParam page: Int,
-        @RequestParam size: Int
+        @RequestParam size: Int,
+        @RequestParam search: String? = null,
+        @RequestParam tags: List<String> = listOf(),
     ): PagedModel<ContentsInquiryResDto> {
         return contentInquiryService.execute(
-            ContentsInquiryModel(page = page, size = size)
+            ContentsInquiryModel(
+                page = page,
+                size = size,
+                search = search,
+                tags = tags
+            )
         )
     }
 

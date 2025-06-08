@@ -5,5 +5,9 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface ContentInquiryRepository {
-    fun inquire(pageable: Pageable): Page<ContentInfo>
+    fun inquire(
+        pageable: Pageable,
+        search: String?,
+        tags: List<String>
+    ): Page<ContentInfo>
 }
