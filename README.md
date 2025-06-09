@@ -156,13 +156,15 @@ cd server
 ### 주요 명령어
 
 #### Windows
-- `start.bat` - 서비스 시작
-- `stop.bat` - 서비스 중지
-- `logs.bat [옵션]` - 로그 확인
-- `clean.bat` - 데이터 완전 삭제
+- `./commands/windows/start.bat` - 서비스 시작
+- `./commands/windows/restart.bat` - 서비스 재시작
+- `./commands/windows/stop.bat` - 서비스 중지
+- `./commands/windows/logs.bat [옵션]` - 로그 확인
+- `./commands/windows/clean.bat` - 데이터 완전 삭제
 
 #### Linux/WSL
 - `./commands/linux/start.sh` - 서비스 시작
+- `./commands/linux/restart.sh` - 서비스 재시작
 - `./commands/linux/stop.sh` - 서비스 중지
 - `./commands/linux/logs.sh [옵션]` - 로그 확인
 - `./commands/linux/clean.sh` - 데이터 완전 삭제
@@ -185,6 +187,13 @@ cd server
 # 파일 시스템 로그 보기
 ./logs.sh file
 ```
+
+### Docker Compose
+- 프로젝트 이름: squad-only 
+
+> **프로젝트 이름 설정 이유**: 기본 docker compose 의 프로젝트 이름은 상위 directory 로 결정됨으로 중복되는 프로젝트명을 가지는 것을 피하기 위해 별도의 프로젝트 이름 설정.
+> 따라서 웬만하면 커맨드를 통해 관리하는 것을 추천!!
+
 
 ## 🚢 배포
 
