@@ -39,7 +39,7 @@ APP_PORT=${APP_PORT:-$DEFAULT_APP_PORT}
 echo "🔧 docker-compose.yml의 애플리케이션 포트를 ${APP_PORT}로 설정합니다..."
 # sed 명령어는 OS 호환성을 위해 -i 뒤에 백업 파일 확장자를 명시하는 것이 좋습니다. (예: sed -i'.bak')
 # 하지만 여기서는 스크립트 내에서 복사된 파일을 다루므로, 직접 수정합니다.
-sed -i "s/ports: *$/ports:/; s/- *"[0-9]*:8080"/- "${APP_PORT}:8080"/" docker-compose.yml
+sed -i "s/\"[0-9]*:8080\"/\"${APP_PORT}:8080\"/" docker-compose.yml
 if [ $? -ne 0 ]; then
     echo "❌ docker-compose.yml 파일의 포트 변경에 실패했습니다."
     exit 1
