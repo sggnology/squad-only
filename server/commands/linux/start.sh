@@ -78,14 +78,14 @@ fi
 
 # Docker Compose로 서비스 시작
 echo "🐳 Docker 컨테이너를 시작합니다..."
-$DOCKER_COMPOSE_CMD --project-name squad-only up -d
+$DOCKER_COMPOSE_CMD -p squad-only up -d
 
 # 서비스 상태 확인
 echo "⏳ 서비스 시작을 기다립니다..."
 sleep 5
 
 echo "📊 서비스 상태를 확인합니다..."
-$DOCKER_COMPOSE_CMD --project-name squad-only ps
+$DOCKER_COMPOSE_CMD -p squad-only ps
 
 echo ""
 echo "✅ Squad Only가 성공적으로 시작되었습니다!"

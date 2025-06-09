@@ -43,3 +43,7 @@ out/
 ### Upload Files ###
 /uploads/
 /my-app-logs/
+/commands/windows/my-app-logs/
+/commands/windows/postgres-data/
+/commands/windows/uploads/
+/commands/windows/docker-compose.yml
