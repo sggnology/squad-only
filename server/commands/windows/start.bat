@@ -62,7 +62,7 @@ if not exist "uploads\storage" mkdir uploads\storage
 
 REM Docker Compose로 서비스 시작
 echo 🐳 Docker 컨테이너를 시작합니다...
-%DOCKER_COMPOSE_CMD% up -d
+%DOCKER_COMPOSE_CMD% -p squad-only up -d
 
 REM 서비스 시작 대기 (cmd 버그로 특정 영역에서 한글 주석 불가...)
 REM echo 서비스 상태를 확인합니다...
@@ -70,7 +70,7 @@ timeout /t 3 /nobreak > nul
 
 REM 서비스 상태 확인
 echo 📊 서비스 상태를 확인합니다...
-%DOCKER_COMPOSE_CMD% ps
+%DOCKER_COMPOSE_CMD% -p squad-only ps
 
 echo.
 echo ✅ Squad Only가 성공적으로 시작되었습니다!

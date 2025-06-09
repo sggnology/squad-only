@@ -49,17 +49,17 @@ goto :help
 
 :app_logs
 echo 🔍 애플리케이션 로그를 확인합니다...
-docker-compose logs -f application
+%DOCKER_COMPOSE_CMD% -p squad-only logs -f application
 goto :end
 
 :db_logs
 echo 🔍 데이터베이스 로그를 확인합니다...
-docker-compose logs -f database
+%DOCKER_COMPOSE_CMD% -p squad-only logs -f database
 goto :end
 
 :all_logs
 echo 🔍 모든 서비스 로그를 확인합니다...
-docker-compose logs -f
+%DOCKER_COMPOSE_CMD% -p squad-only logs -f
 goto :end
 
 :file_logs
@@ -95,6 +95,6 @@ echo.
 echo 기본값 (옵션 없음): 애플리케이션 로그 표시
 echo.
 echo 🔍 애플리케이션 로그를 확인합니다...
-docker-compose logs -f application
+%DOCKER_COMPOSE_CMD% -p squad-only logs -f application
 
 :end

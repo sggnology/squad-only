@@ -40,11 +40,11 @@ if not exist ".\docker-compose.yml" (
 
 REM 컨테이너 중지 및 제거
 echo 🐳 Docker 컨테이너를 중지합니다...
-%DOCKER_COMPOSE_CMD% down
+%DOCKER_COMPOSE_CMD% -p squad-only down
 
 REM 상태 확인
 echo 📊 서비스 상태를 확인합니다...
-docker-compose ps
+%DOCKER_COMPOSE_CMD% -p squad-only ps
 
 echo.
 echo ✅ Squad Only가 성공적으로 중지되었습니다!

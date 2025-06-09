@@ -52,13 +52,13 @@ echo.
 if /i "%confirm%"=="yes" (
     REM 컨테이너 중지 및 제거
     echo 🛑 컨테이너를 중지하고 제거합니다...
-    %DOCKER_COMPOSE_CMD% down -v --remove-orphans
+    %DOCKER_COMPOSE_CMD% -p squad-only down -v --remove-orphans
 
     REM 이미지 제거 (선택사항)
     set /p remove_images="Docker 이미지도 제거하시겠습니까? (y/n): "
     if /i "%remove_images%"=="y" (
         echo 🗑️  Docker 이미지를 제거합니다...
-        %DOCKER_COMPOSE_CMD% down --rmi all
+        %DOCKER_COMPOSE_CMD% -p squad-only down --rmi all
     )
     
     REM 데이터 디렉토리 제거

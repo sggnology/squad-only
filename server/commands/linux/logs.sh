@@ -37,7 +37,8 @@ elif [ "$1" = "db" ] || [ "$1" = "database" ]; then
     $DOCKER_COMPOSE_CMD logs -f database
 elif [ "$1" = "all" ]; then
     echo "🔍 모든 서비스 로그를 확인합니다..."
-    $DOCKER_COMPOSE_CMD logs -f
+    # 모든 서비스 로그 보기 (Ctrl+C로 종료)
+    $DOCKER_COMPOSE_CMD -p squad-only logs -f
 elif [ "$1" = "file" ]; then
     echo "🔍 파일 시스템 로그를 확인합니다..."
     echo ""

@@ -42,18 +42,18 @@ echo ""
 if [[ $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
     # 컨테이너 중지 및 제거
     echo "🛑 컨테이너를 중지하고 제거합니다..."
-    $DOCKER_COMPOSE_CMD down -v --remove-orphans
+    $DOCKER_COMPOSE_CMD -p squad-only down -v --remove-orphans
 
     # 이미지 제거 (선택사항)
     read -p "Docker 이미지도 제거하시겠습니까? (y/n): " -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "🗑️  Docker 이미지를 제거합니다..."
-        $DOCKER_COMPOSE_CMD down --rmi all
+        $DOCKER_COMPOSE_CMD -p squad-only down --rmi all
     fi
 
     echo "🗑️  Docker 컨테이너, 네트워크, 볼륨을 삭제합니다..."
     if [ -f "docker-compose.yml" ]; then
-        $DOCKER_COMPOSE_CMD down --volumes
+        $DOCKER_COMPOSE_CMD -p squad-only down --volumes
     else
         echo "⚠️ docker-compose.yml 파일이 없어 Docker Compose 명령을 실행할 수 없습니다."
         echo "   관련된 컨테이너나 네트워크가 있다면 수동으로 삭제해야 할 수 있습니다."

@@ -29,11 +29,11 @@ if [ ! -f "docker-compose.yml" ]; then
 fi
 
 # Docker Compose로 서비스 중지
-$DOCKER_COMPOSE_CMD down
+$DOCKER_COMPOSE_CMD -p squad-only down
 
 # 상태 확인
 echo "📊 서비스 상태를 확인합니다..."
-docker-compose ps
+$DOCKER_COMPOSE_CMD -p squad-only ps
 
 echo ""
 echo "✅ Squad Only가 성공적으로 중지되었습니다!"
