@@ -3,7 +3,19 @@
 # Squad Only Docker 중지 스크립트
 echo "🛑 Squad Only Docker 환경을 중지합니다..."
 
-# Docker Compose 파일 확인
+# Docker Compose 명령어 확인
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+else
+    echo "❌ 'docker-compose' 또는 'docker compose' 명령을 찾을 수 없습니다."
+    echo "   Docker Compose를 설치하거나 PATH 환경 변수를 확인하세요."
+    exit 1
+fi
+echo "ℹ️  Using: $DOCKER_COMPOSE_CMD"
+
+# Docker Compose 파일 확인 (복사 로직은 stop에서는 불필요할 수 있으나, 일관성을 위해 추가)
 if [ ! -f "docker-compose.yml" ]; then
     echo "📋 docker-compose.yml 파일을 복사합니다..."
     if [ -f "../../docker-compose.yml" ]; then
@@ -16,9 +28,8 @@ if [ ! -f "docker-compose.yml" ]; then
     fi
 fi
 
-# 컨테이너 중지 및 제거
-echo "🐳 Docker 컨테이너를 중지합니다..."
-docker-compose down
+# Docker Compose로 서비스 중지
+$DOCKER_COMPOSE_CMD down
 
 # 상태 확인
 echo "📊 서비스 상태를 확인합니다..."

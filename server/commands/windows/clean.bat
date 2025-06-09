@@ -2,6 +2,28 @@
 chcp 65001 > nul
 echo 🧹 Squad Only Docker 환경을 완전히 정리합니다...
 
+REM Docker Compose 명령어 확인
+set DOCKER_COMPOSE_CMD=
+where docker-compose >nul 2>nul
+if %errorlevel% equ 0 (
+    set DOCKER_COMPOSE_CMD=docker-compose
+) else (
+    where docker >nul 2>nul
+    if %errorlevel% equ 0 (
+        docker compose version >nul 2>nul
+        if %errorlevel% equ 0 (
+            set DOCKER_COMPOSE_CMD=docker compose
+        )
+    )
+)
+
+if not defined DOCKER_COMPOSE_CMD (
+    echo ERROR: 'docker-compose' or 'docker compose' command not found.
+    echo        Please install Docker Compose or check your PATH environment variable.
+    exit /b 1
+)
+echo INFO: Using: %DOCKER_COMPOSE_CMD%
+
 REM Docker Compose 파일 확인
 if not exist "docker-compose.yml" (
     echo 📋 docker-compose.yml 파일을 복사합니다...
@@ -30,13 +52,13 @@ echo.
 if /i "%confirm%"=="yes" (
     REM 컨테이너 중지 및 제거
     echo 🛑 컨테이너를 중지하고 제거합니다...
-    docker-compose down -v --remove-orphans
-    
+    %DOCKER_COMPOSE_CMD% down -v --remove-orphans
+
     REM 이미지 제거 (선택사항)
     set /p remove_images="Docker 이미지도 제거하시겠습니까? (y/n): "
     if /i "%remove_images%"=="y" (
         echo 🗑️  Docker 이미지를 제거합니다...
-        docker-compose down --rmi all
+        %DOCKER_COMPOSE_CMD% down --rmi all
     )
     
     REM 데이터 디렉토리 제거
