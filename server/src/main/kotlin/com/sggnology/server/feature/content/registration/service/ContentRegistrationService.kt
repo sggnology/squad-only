@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ContentRegistrationService(
     private val contentInfoRepository: ContentInfoRepository,
-    private val userInfoRepository: UserInfoRepository,
     private val tagInfoRepository: TagInfoRepository,
     private val fileUploadService: FileUploadService,
     private val eventPublisher: ApplicationEventPublisher
@@ -49,7 +48,7 @@ class ContentRegistrationService(
 
         val newContentInfo = ContentInfo(
             title = registrationReqDto.title,
-            description = registrationReqDto.title,
+            description = registrationReqDto.description,
             location = registrationReqDto.location,
         )
 
