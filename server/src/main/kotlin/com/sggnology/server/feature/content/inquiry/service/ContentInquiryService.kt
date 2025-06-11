@@ -28,15 +28,7 @@ class ContentInquiryService(
         return ContentInquiryResDto.fromContentInfo(contentInfo, commentCount)
     }
 
-    @WithUserInfo
     fun execute(contentsInquiryModel: ContentsInquiryModel): PagedModel<ContentsInquiryResDto> {
-
-        // 사용자 ID가 주어진 경우, 현재 사용자와 일치하는지 확인
-        if(contentsInquiryModel.userId != null){
-            if(UserInfoContextHolder.getUserInfo().userId != contentsInquiryModel.userId){
-                throw IllegalArgumentException("사용자 ID가 일치하지 않습니다.")
-            }
-        }
 
         val pageInfo = PageRequest.of(
             contentsInquiryModel.page,
