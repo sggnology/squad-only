@@ -25,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import { selectAuth } from '../../store/authSlice';
 import LocationMap from '../../components/LocationMap';
+import { CommentSection } from '../../components/CommentSection/CommentSection';
 
 export interface ContentResponseData {
   idx: number;
@@ -36,6 +37,7 @@ export interface ContentResponseData {
   createdAt: string;
   registeredUserId: string | null;
   registeredUsername: string | null;
+  commentCount: number | null;
 }
 
 interface Content {
@@ -89,7 +91,7 @@ function Detail() {
 
         // Type assertion for Spring pageable response
         const responseData = res.data;
-        const newContent: Content = {
+        const content: Content = {
           idx: responseData.idx,
           imageUrl: responseData.fileIds && responseData.fileIds.length > 0 ? `/api/v1/file/${responseData.fileIds[0]}` : 'https://placehold.co/400', // Fallback image URL
           title: responseData.title,
@@ -101,7 +103,7 @@ function Detail() {
           registeredUsername: responseData.registeredUsername || 'Unknown',
         };
 
-        setContent(newContent);
+        setContent(content);
       } catch (e) {
         // The global error handler will display the error.
         // You can still have specific error handling here if needed.
@@ -131,14 +133,13 @@ function Detail() {
       )}
       
       {!loading && content != null && (
-        <Card sx={{ maxWidth: 800, mx: 'auto', mb: 8 }}>
-          {/* 이미지 섹션 */}
+        <Card sx={{ maxWidth: 700, mx: 'auto', mb: 8 }}>          {/* 이미지 섹션 - 크기 축소 */}
           <CardMedia
             component="img"
             height="400"
             image={content.imageUrl}
             alt={content.title}
-            sx={{ objectFit: 'cover' }}
+            sx={{ objectFit: 'contain', py: 1, backgroundColor: '#f5f5f5' }}
           />
           
           <CardContent sx={{ p: 4 }}>
@@ -244,6 +245,11 @@ function Detail() {
             </Box>
           </CardContent>
         </Card>
+      )}
+
+      {/* 댓글 섹션 - 컨텐츠가 로드된 경우에만 표시 */}
+      {!loading && content && (
+        <CommentSection contentIdx={content.idx} />
       )}
 
       {/* 플로팅 편집 버튼 - 편집 권한이 있을 때만 표시 */}

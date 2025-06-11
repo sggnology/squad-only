@@ -2,16 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Card,
-  CardMedia,
   CardContent,
   Typography,
   Chip,
   Box,
   Avatar,
+  CardMedia,
 } from '@mui/material';
 import {
   Person as PersonIcon,
   LocationOn as LocationIcon,
+  Comment as CommentIcon,
 } from '@mui/icons-material';
 import { Content } from '../../types/content';
 
@@ -50,8 +51,8 @@ export const ContentCard: React.FC<ContentCardProps> = ({
         },
       }}
       onClick={() => navigate(`/detail/${content.idx}`)}
-    >
-      <CardMedia
+    >      
+    <CardMedia
         component="img"
         image={content.imageUrl}
         alt={content.title}
@@ -127,12 +128,21 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               {content.registeredUsername}
             </Typography>
           </Box>
-        )}
-
-        {/* 등록일 */}
-        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-          {content.createdAt}
-        </Typography>
+        )}        
+        {/* 등록일과 댓글 수 */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+            {content.createdAt}
+          </Typography>
+          {content.commentCount > 0 && (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <CommentIcon sx={{ fontSize: 14, color: '#666', mr: 0.5 }} />
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                {content.commentCount}
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );

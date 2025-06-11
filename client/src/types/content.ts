@@ -10,6 +10,7 @@ export interface ContentResponseData {
   registeredUsername: string | null;
   location: string;
   createdAt: string;
+  commentCount?: number; // 댓글 수 추가
 }
 
 // 클라이언트에서 사용하는 Content 타입
@@ -21,6 +22,7 @@ export interface Content {
   registeredUsername: string | null;
   location: string;
   createdAt: string;
+  commentCount?: number; // 댓글 수 추가
 }
 
 // 페이지네이션 타입
@@ -68,4 +70,5 @@ export const convertToContent = (item: ContentResponseData): Content => ({
   registeredUsername: item.registeredUsername || 'Unknown',
   location: item.location,
   createdAt: formatDateTime(item.createdAt), // formatDateTime 적용
+  commentCount: item.commentCount || 0, // commentCount 추가
 });
