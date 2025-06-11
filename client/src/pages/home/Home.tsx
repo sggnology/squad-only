@@ -2,74 +2,34 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Container,
-  Card,
-  CardMedia,
-  CardContent,
   Typography,
   Chip,
   Box,
   Fab,
   CircularProgress,
-  Avatar,
   Paper,
   TextField,
   IconButton,
   Autocomplete,
-  Button,
-  Alert
+  Button
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Person as PersonIcon,
-  LocationOn as LocationIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
   FilterList as FilterListIcon
 } from '@mui/icons-material';
 // Import the new axiosInstance
 import axiosInstance from '../../utils/axiosInstance';
-import { formatDateTime } from '../../utils/DateUtil';
-
-interface ContentResponseData {
-  idx: number;
-  fileIds: number[];
-  title: string;
-  tags: string[];
-  registeredUsername: string | null;
-  location: string;
-  createdAt: string;
-}
-
-interface Content {
-  idx: number;
-  imageUrl: string;
-  title: string;
-  tags: string[];
-  registeredUsername: string | null;
-  location: string;
-  createdAt: string;
-}
-
-interface Page {
-  number: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-}
-
-interface PageContent {
-  content: ContentResponseData[];
-  page: Page;
-}
-
-interface TagResponseData {
-  name: string;
-}
-
-interface TagPageContent {
-  content: TagResponseData[];
-  page: Page;
-}
+import { 
+  ContentResponseData, 
+  Content,
+  PageContent, 
+  TagPageContent,
+  ContentApiParams,
+  convertToContent
+} from '../../types/content';
+import { ContentGrid } from '../../components/ContentGrid/ContentGrid';
 
 function Home() {
   const [content, setContent] = useState<Content[]>([]);
@@ -149,27 +109,21 @@ function Home() {
       fetchingRef.current = true;
       setLoading(true);
       try {
-        const res = await axiosInstance.get<PageContent>('/content', {
-          params: {
+
+        const params: ContentApiParams = {
             page,
             size,
             search: searchQuery || undefined,
             tags: selectedTags.length > 0 ? selectedTags.join(",") : undefined
           }
-        });
-        // Type assertion for Spring pageable response
-        const responseData = res.data.content;
-        const responsePage = res.data.page;
 
-        const newContent: Content[] = responseData.map((item: ContentResponseData) => ({
-          idx: item.idx,
-          imageUrl: item.fileIds && item.fileIds.length > 0 ? `/api/v1/file/${item.fileIds[0]}` : 'https://placehold.co/400', // Fallback image URL
-          title: item.title,
-          tags: item.tags,
-          registeredUsername: item.registeredUsername || 'Unknown',
-          location: item.location,
-          createdAt: formatDateTime(item.createdAt),
-        }));
+        const res = await axiosInstance.get<PageContent>('/content', {
+          params
+        });
+
+        const responseData = res.data.content;
+        const responsePage = res.data.page;        
+        const newContent: Content[] = responseData.map((item: ContentResponseData) => convertToContent(item));
 
         const isLast = responsePage.number === responsePage.totalPages - 1;
         setContent((prev) => [...prev, ...newContent]);
@@ -395,179 +349,23 @@ function Home() {
               모든 필터 제거
             </Button>
           )}
-        </Box>
-      </Paper>
+        </Box>      </Paper>
 
-      {/* Error Alert */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
-      )}
-
-      {/* Content Grid */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 3,
-          justifyContent: 'center',
+      <ContentGrid
+        content={content}
+        loading={loading}
+        last={last}
+        error={error}
+        searchQuery={searchQuery}
+        selectedTags={selectedTags}
+        onTagClick={(tag) => {
+          if (!selectedTags.includes(tag)) {
+            handleTagSelection([...selectedTags, tag]);
+          }
         }}
-      >
-        {content.map((item) => (
-          <Card
-            key={item.idx}
-            sx={{
-              width: { xs: '100%', sm: '300px', md: '320px' },
-              height: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              cursor: 'pointer',
-              transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: 4,
-              },
-            }}
-            onClick={() => navigate(`/detail/${item.idx}`)}
-          >
-            <CardMedia
-              component="img"
-              image={item.imageUrl}
-              alt={item.title}
-              sx={{
-                objectFit: 'cover',
-                width: '100%',
-                minHeight: '300px',
-                maxHeight: '300px'
-              }}
-            />
-            <CardContent sx={{ flexGrow: 1, pb: 1 }}>
-              <Typography gutterBottom variant="h6" component="h2"
-                sx={{
-                  fontWeight: 'bold',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                }}>
-                {item.title}
-              </Typography>
-
-              {/* 태그 표시 */}
-              <Box sx={{ mb: 2 }}>
-                {item.tags.slice(0, 3).map((tag, index) => (
-                  <Chip
-                    key={index}
-                    label={tag}
-                    size="small"
-                    sx={{
-                      mr: 0.5,
-                      mb: 0.5,
-                      backgroundColor: '#e3f2fd',
-                      color: '#1976d2',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: '#bbdefb',
-                      }
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!selectedTags.includes(tag)) {
-                        handleTagSelection([...selectedTags, tag]);
-                      }
-                    }}
-                  />
-                ))}
-                {item.tags.length > 3 && (
-                  <Chip
-                    label={`+${item.tags.length - 3}`}
-                    size="small"
-                    sx={{
-                      mr: 0.5,
-                      mb: 0.5,
-                      backgroundColor: '#f5f5f5',
-                      color: '#666'
-                    }}
-                  />
-                )}
-              </Box>
-
-              {/* 위치 정보 */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <LocationIcon sx={{ fontSize: 16, color: '#666', mr: 0.5 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {item.location}
-                </Typography>
-              </Box>
-
-              {/* 등록자 정보 */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Avatar sx={{ width: 20, height: 20, mr: 1, backgroundColor: '#1976d2' }}>
-                  <PersonIcon sx={{ fontSize: 12 }} />
-                </Avatar>
-                <Typography variant="body2" color="text.secondary">
-                  {item.registeredUsername}
-                </Typography>
-              </Box>
-
-              {/* 등록일 */}
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                {item.createdAt}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
-
-      {/* Empty State */}
-      {!loading && content.length === 0 && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 6 }}>
-          <Paper sx={{ p: 4, textAlign: 'center', backgroundColor: '#f9f9f9' }}>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchQuery || selectedTags.length > 0
-                ? '검색 결과가 없습니다'
-                : '등록된 콘텐츠가 없습니다'
-              }
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {searchQuery || selectedTags.length > 0
-                ? '다른 검색어나 태그로 시도해보세요'
-                : '첫 번째 콘텐츠를 등록해보세요!'
-              }
-            </Typography>
-            {(searchQuery || selectedTags.length > 0) && (
-              <Button
-                variant="outlined"
-                onClick={handleClearAllFilters}
-                sx={{ mt: 2 }}
-                startIcon={<ClearIcon />}
-              >
-                필터 초기화
-              </Button>
-            )}
-          </Paper>
-        </Box>
-      )}
-
-      {/* 로딩 인디케이터 */}
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
-
-      {/* 마지막 페이지 메시지 */}
-      {!loading && last && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Paper sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
-            <Typography variant="body2" color="text.secondary">
-              더 이상 콘텐츠가 없습니다.
-            </Typography>
-          </Paper>
-        </Box>
-      )}
+        onClearFilters={handleClearAllFilters}
+        showUsername={true}
+      />
 
       {/* 플로팅 액션 버튼 */}
       <Fab

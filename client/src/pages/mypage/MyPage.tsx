@@ -33,12 +33,14 @@ import {
   Visibility,
   VisibilityOff,
   Close as CloseIcon,
-  History as HistoryIcon
+  History as HistoryIcon,
+  Article as ArticleIcon
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectUser, updateUserProfile } from '../../store/authSlice';
 import axiosInstance from '../../utils/axiosInstance';
 import ActivityLogComponent from '../../components/ActivityLog/ActivityLogComponent';
+import { MyContentList } from '../../components/MyContentList/MyContentList';
 
 interface Profile {
   userId: string;
@@ -61,15 +63,15 @@ interface PasswordChangeRequest {
 function MyPage() {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectUser);
-  
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
-  
+
   // 탭 상태
   const [activeTab, setActiveTab] = useState(0);
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
@@ -202,20 +204,20 @@ function MyPage() {
         name: editForm.name.trim(),
         nickname: editForm.nickname.trim()
       });
-      
+
       // 로컬 프로필 상태 업데이트
       setProfile(prev => prev ? {
         ...prev,
         name: response.data.name,
         nickname: response.data.nickname
       } : null);
-      
+
       // Auth slice의 사용자 정보도 업데이트
       dispatch(updateUserProfile({
         name: response.data.name,
         nickname: response.data.nickname
       }));
-      
+
       setIsEditing(false);
       setFormErrors({
         name: '',
@@ -259,7 +261,7 @@ function MyPage() {
         newPassword: passwordForm.newPassword,
         confirmNewPassword: passwordForm.confirmNewPassword
       });
-      
+
       setIsPasswordModalOpen(false);
       setPasswordForm({
         currentPassword: '',
@@ -357,151 +359,154 @@ function MyPage() {
         <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccessMessage('')}>
           {successMessage}
         </Alert>
-      )}
-
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+      )}      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} aria-label="마이페이지 탭">
+          <Tab label="등록한 컨텐츠" icon={<ArticleIcon />} iconPosition="start" />
           <Tab label="프로필 정보" icon={<PersonIcon />} iconPosition="start" />
           <Tab label="최근 활동" icon={<HistoryIcon />} iconPosition="start" />
         </Tabs>
-      </Box>
-
+      </Box>      
+      
       {activeTab === 0 && (
         <Box>
-          {profile && (
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Avatar sx={{ width: 64, height: 64, mr: 2, bgcolor: 'primary.main' }}>
-                <AccountCircleIcon sx={{ fontSize: 40 }} />
-              </Avatar>
-              <Box>
-                <Typography variant="h5" gutterBottom>
-                  {profile.nickname || profile.name}
-                </Typography>
-                <Chip 
-                  icon={<EventIcon />}
-                  label={`가입일: ${formatDate(profile.createdAt)}`}
-                  variant="outlined"
-                  size="small"
-                />
-              </Box>
-            </Box>
-
-            <Divider sx={{ mb: 3 }} />
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <TextField
-                label="사용자 ID"
-                value={profile.userId}
-                fullWidth
-                disabled
-                variant="outlined"
-                helperText="사용자 ID는 변경할 수 없습니다."
-              />
-
-              <TextField
-                label="이름"
-                value={isEditing ? editForm.name : profile.name}
-                onChange={handleInputChange('name')}
-                fullWidth
-                disabled={!isEditing || loading}
-                variant="outlined"
-                error={!!formErrors.name}
-                helperText={formErrors.name || '실제 이름을 입력해주세요.'}
-                required
-              />
-
-              <TextField
-                label="닉네임"
-                value={isEditing ? editForm.nickname : (profile.nickname || '')}
-                onChange={handleInputChange('nickname')}
-                fullWidth
-                disabled={!isEditing || loading}
-                variant="outlined"
-                error={!!formErrors.nickname}
-                helperText={formErrors.nickname || '다른 사용자에게 표시될 닉네임입니다. (선택사항)'}
-                placeholder="닉네임을 입력하세요"
-              />
-            </Box>
-          </CardContent>          
-          <CardActions sx={{ justifyContent: 'space-between', p: 3 }}>
-            <Button
-              variant="outlined"
-              startIcon={<LockIcon />}
-              onClick={() => setIsPasswordModalOpen(true)}
-              disabled={loading}
-              color="secondary"
-            >
-              비밀번호 변경
-            </Button>
-            
-            <Box>
-              {!isEditing ? (
-                <Button
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={handleEditStart}
-                  disabled={loading}
-                >
-                  편집
-                </Button>
-              ) : (
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<CancelIcon />}
-                    onClick={handleEditCancel}
-                    disabled={loading}
-                  >
-                    취소
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
-                    onClick={handleSave}
-                    disabled={loading}
-                  >
-                    {loading ? '저장 중...' : '저장'}
-                  </Button>
-                </Box>
-              )}
-            </Box>
-          </CardActions>
-        </Card>
-      )}      {/* 사용자 통계 및 추가 정보 섹션 */}
-      <Card sx={{ mt: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            계정 정보
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography color="text.secondary">현재 권한:</Typography>
-              <Box>
-                {currentUser?.roles.map((role) => (
-                  <Chip 
-                    key={role} 
-                    label={role === 'ADMIN' ? '관리자' : '일반 사용자'} 
-                    size="small" 
-                    color={role === 'ADMIN' ? 'error' : 'default'}
-                    sx={{ ml: 1 }}
-                  />
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography color="text.secondary">계정 상태:</Typography>
-              <Chip label="활성" color="success" size="small" />
-            </Box>
-          </Box>        
-        </CardContent>
-      </Card>
+          <MyContentList />
         </Box>
       )}
 
       {activeTab === 1 && (
+        <Box>
+          {profile && (
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <Avatar sx={{ width: 64, height: 64, mr: 2, bgcolor: 'primary.main' }}>
+                    <AccountCircleIcon sx={{ fontSize: 40 }} />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h5" gutterBottom>
+                      {profile.nickname || profile.name}
+                    </Typography>
+                    <Chip
+                      icon={<EventIcon />}
+                      label={`가입일: ${formatDate(profile.createdAt)}`}
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Box>
+                </Box>
+
+                <Divider sx={{ mb: 3 }} />
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <TextField
+                    label="사용자 ID"
+                    value={profile.userId}
+                    fullWidth
+                    disabled
+                    variant="outlined"
+                    helperText="사용자 ID는 변경할 수 없습니다."
+                  />
+
+                  <TextField
+                    label="이름"
+                    value={isEditing ? editForm.name : profile.name}
+                    onChange={handleInputChange('name')}
+                    fullWidth
+                    disabled={!isEditing || loading}
+                    variant="outlined"
+                    error={!!formErrors.name}
+                    helperText={formErrors.name || '실제 이름을 입력해주세요.'}
+                    required
+                  />
+
+                  <TextField
+                    label="닉네임"
+                    value={isEditing ? editForm.nickname : (profile.nickname || '')}
+                    onChange={handleInputChange('nickname')}
+                    fullWidth
+                    disabled={!isEditing || loading}
+                    variant="outlined"
+                    error={!!formErrors.nickname}
+                    helperText={formErrors.nickname || '다른 사용자에게 표시될 닉네임입니다. (선택사항)'}
+                    placeholder="닉네임을 입력하세요"
+                  />
+                </Box>
+              </CardContent>
+              <CardActions sx={{ justifyContent: 'space-between', p: 3 }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<LockIcon />}
+                  onClick={() => setIsPasswordModalOpen(true)}
+                  disabled={loading}
+                  color="secondary"
+                >
+                  비밀번호 변경
+                </Button>
+
+                <Box>
+                  {!isEditing ? (
+                    <Button
+                      variant="contained"
+                      startIcon={<EditIcon />}
+                      onClick={handleEditStart}
+                      disabled={loading}
+                    >
+                      편집
+                    </Button>
+                  ) : (
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Button
+                        variant="outlined"
+                        startIcon={<CancelIcon />}
+                        onClick={handleEditCancel}
+                        disabled={loading}
+                      >
+                        취소
+                      </Button>
+                      <Button
+                        variant="contained"
+                        startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
+                        onClick={handleSave}
+                        disabled={loading}
+                      >
+                        {loading ? '저장 중...' : '저장'}
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+              </CardActions>
+            </Card>
+          )}      {/* 사용자 통계 및 추가 정보 섹션 */}
+          <Card sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                계정 정보
+              </Typography>
+              <Divider sx={{ mb: 3 }} />
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography color="text.secondary">현재 권한:</Typography>
+                  <Box>
+                    {currentUser?.roles.map((role) => (
+                      <Chip
+                        key={role}
+                        label={role === 'ADMIN' ? '관리자' : '일반 사용자'}
+                        size="small"
+                        color={role === 'ADMIN' ? 'error' : 'default'}
+                        sx={{ ml: 1 }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography color="text.secondary">계정 상태:</Typography>
+                  <Chip label="활성" color="success" size="small" />
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      )}      {activeTab === 2 && (
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -518,8 +523,8 @@ function MyPage() {
       )}
 
       {/* 비밀번호 변경 모달 */}
-      <Dialog 
-        open={isPasswordModalOpen} 
+      <Dialog
+        open={isPasswordModalOpen}
         onClose={handlePasswordModalClose}
         maxWidth="sm"
         fullWidth
@@ -537,7 +542,7 @@ function MyPage() {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        
+
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
             <TextField
@@ -563,7 +568,7 @@ function MyPage() {
                 ),
               }}
             />
-            
+
             <TextField
               label="새 비밀번호"
               type={showPasswords.new ? 'text' : 'password'}
@@ -587,7 +592,7 @@ function MyPage() {
                 ),
               }}
             />
-            
+
             <TextField
               label="새 비밀번호 확인"
               type={showPasswords.confirm ? 'text' : 'password'}
@@ -597,23 +602,25 @@ function MyPage() {
               disabled={passwordLoading}
               error={!!passwordFormErrors.confirmNewPassword}
               helperText={passwordFormErrors.confirmNewPassword || '새 비밀번호를 다시 입력해주세요.'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => togglePasswordVisibility('confirm')}
-                      edge="end"
-                      disabled={passwordLoading}
-                    >
-                      {showPasswords.confirm ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => togglePasswordVisibility('confirm')}
+                        edge="end"
+                        disabled={passwordLoading}
+                      >
+                        {showPasswords.confirm ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }
               }}
             />
           </Box>
         </DialogContent>
-        
+
         <DialogActions sx={{ p: 3 }}>
           <Button
             onClick={handlePasswordModalClose}
