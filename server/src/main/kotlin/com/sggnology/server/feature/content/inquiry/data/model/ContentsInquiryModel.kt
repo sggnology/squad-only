@@ -5,4 +5,5 @@ data class ContentsInquiryModel(
     val size: Int,
     val search: String?,
     val tags: List<String>,
+    val userId: String?
 )

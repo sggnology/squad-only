@@ -18,7 +18,8 @@ class ContentInquiryRepositoryImpl(
     override fun inquire(
         pageable: Pageable,
         search: String?,
-        tags: List<String>
+        tags: List<String>,
+        userId: String?
     ): Page<ContentInfo> {
 
         // 기본 조건: 삭제되지 않은 콘텐츠
@@ -36,6 +37,11 @@ class ContentInquiryRepositoryImpl(
         if (tags.isNotEmpty()) {
             // 태그가 있으면 태그 이름에 대한 OR 조건 추가
             searchAndTagConditions.or(contentInfo.contentTags.any().tag.name.`in`(tags))
+        }
+
+        if (!userId.isNullOrBlank()) {
+            // 특정 사용자 ID가 주어진 경우 해당 사용자에 대한 조건 추가
+            searchAndTagConditions.and(contentInfo.registeredUser.userId.eq(userId))
         }
 
         // 최종 WHERE 조건: 기본 조건 AND (검색어/태그 조건들)

@@ -8,6 +8,7 @@ interface ContentInquiryRepository {
     fun inquire(
         pageable: Pageable,
         search: String?,
-        tags: List<String>
+        tags: List<String>,
+        userId: String?
     ): Page<ContentInfo>
 }

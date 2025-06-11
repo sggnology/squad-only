@@ -58,13 +58,15 @@ class ContentController(
         @RequestParam size: Int,
         @RequestParam search: String? = null,
         @RequestParam tags: List<String> = listOf(),
+        @RequestParam(required = false) userId: String? = null
     ): PagedModel<ContentsInquiryResDto> {
         return contentInquiryService.execute(
             ContentsInquiryModel(
                 page = page,
                 size = size,
                 search = search,
-                tags = tags
+                tags = tags,
+                userId = userId
             )
         )
     }
