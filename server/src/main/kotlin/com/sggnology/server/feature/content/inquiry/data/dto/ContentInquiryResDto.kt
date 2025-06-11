@@ -13,9 +13,9 @@ data class ContentInquiryResDto(
     val tags: MutableSet<String> = mutableSetOf(),
     val registeredUserId: String? = null,
     val registeredUsername: String?,
-){
-    companion object{
-        fun fromContentInfo(contentInfo: ContentInfo): ContentInquiryResDto {
+    val commentCount: Long = 0
+){    companion object{
+        fun fromContentInfo(contentInfo: ContentInfo, commentCount: Long = 0): ContentInquiryResDto {
             return ContentInquiryResDto(
                 idx = contentInfo.idx,
                 fileIds = contentInfo.fileInfos.map { it.idx }.toMutableSet(),
@@ -27,7 +27,8 @@ data class ContentInquiryResDto(
                 registeredUserId = contentInfo.registeredUser?.userId,
                 registeredUsername = contentInfo.registeredUser?.nickname
                     ?: contentInfo.registeredUser?.name
-                    ?: contentInfo.registeredUser?.userId
+                    ?: contentInfo.registeredUser?.userId,
+                commentCount = commentCount
             )
         }
     }

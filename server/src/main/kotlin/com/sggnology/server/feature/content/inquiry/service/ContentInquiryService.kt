@@ -2,6 +2,7 @@ package com.sggnology.server.feature.content.inquiry.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
 import com.sggnology.server.common.util.UserInfoContextHolder
+import com.sggnology.server.db.sql.repository.CommentInfoRepository
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentsInquiryResDto
@@ -14,14 +15,17 @@ import org.springframework.stereotype.Service
 
 @Service
 class ContentInquiryService(
-    private val contentInfoRepository: ContentInfoRepository
+    private val contentInfoRepository: ContentInfoRepository,
+    private val commentInfoRepository: CommentInfoRepository
 ) {
 
     fun execute(contentInquiryModel: ContentInquiryModel): ContentInquiryResDto {
         val contentInfo = contentInfoRepository.findById(contentInquiryModel.idx)
             .orElseThrow { IllegalArgumentException("컨텐츠를 찾을 수 없습니다. IDX: ${contentInquiryModel.idx}") }
 
-        return ContentInquiryResDto.fromContentInfo(contentInfo)
+        val commentCount = commentInfoRepository.countByContentIdxAndIsDeletedFalse(contentInfo.idx)
+
+        return ContentInquiryResDto.fromContentInfo(contentInfo, commentCount)
     }
 
     @WithUserInfo
