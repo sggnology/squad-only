@@ -11,6 +11,7 @@ data class ContentsInquiryResDto(
     val createdAt: LocalDateTime,
     val tags: MutableSet<String> = mutableSetOf(),
     val registeredUsername: String?,
+    val commentCount: Long = 0
 ){
     companion object{
         fun fromContentInfo(contentInfo: ContentInfo): ContentsInquiryResDto {

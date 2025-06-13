@@ -1,7 +1,5 @@
 package com.sggnology.server.feature.content.inquiry.service
 
-import com.sggnology.server.common.annotation.WithUserInfo
-import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.repository.CommentInfoRepository
 import com.sggnology.server.db.sql.repository.ContentInfoRepository
 import com.sggnology.server.feature.content.inquiry.data.dto.ContentInquiryResDto
