@@ -52,16 +52,27 @@ class ContentInquiryRepositoryImpl(
             basePredicate // 검색어/태그 조건이 없으면 기본 조건만 사용
         }
 
+        val ids = queryFactory
+            .select(contentInfo.idx)
+            .from(contentInfo)
+            .where(finalPredicate)
+            .orderBy(contentInfo.createdAt.desc(), contentInfo.idx.desc())
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        if( ids.isEmpty()) {
+            return PageImpl(emptyList(), pageable, 0L)
+        }
+
         val contentQuery = queryFactory
             .selectFrom(contentInfo).distinct()
             .leftJoin(contentInfo.registeredUser).fetchJoin()
             .leftJoin(contentInfo.contentTags).fetchJoin()
-            .where(finalPredicate)
+            .where(contentInfo.idx.`in`(ids))
             .orderBy(
                 contentInfo.createdAt.desc(), contentInfo.idx.desc()
             )
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
 
         val content: List<ContentInfo> = contentQuery.fetch()
 
