@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CommentInfoRepository : JpaRepository<CommentInfo, Long>, CommentInquiryRepository {
     
-    @Query("SELECT COUNT(c) FROM CommentInfo c WHERE c.content.idx = :contentIdx AND c.isDeleted = false")
+    @Query("SELECT COUNT(c) FROM CommentInfo c WHERE c.contentInfo.idx = :contentIdx AND c.isDeleted = false")
     fun countByContentIdxAndIsDeletedFalse(@Param("contentIdx") contentIdx: Long): Long
     
     fun findByIdxAndIsDeletedFalse(idx: Long): CommentInfo?

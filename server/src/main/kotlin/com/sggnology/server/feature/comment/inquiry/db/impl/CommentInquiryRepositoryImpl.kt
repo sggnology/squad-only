@@ -23,7 +23,7 @@ class CommentInquiryRepositoryImpl(
             .selectFrom(commentInfo)
             .leftJoin(commentInfo.user).fetchJoin()
             .where(
-                commentInfo.content.idx.eq(contentIdx)
+                commentInfo.contentInfo.idx.eq(contentIdx)
                     .and(commentInfo.isDeleted.eq(false))
             )
             .orderBy(commentInfo.createdAt.desc()) // 댓글은 등록순으로 표시
@@ -36,7 +36,7 @@ class CommentInquiryRepositoryImpl(
             .select(commentInfo.count())
             .from(commentInfo)
             .where(
-                commentInfo.content.idx.eq(contentIdx)
+                commentInfo.contentInfo.idx.eq(contentIdx)
                     .and(commentInfo.isDeleted.eq(false))
             )
 

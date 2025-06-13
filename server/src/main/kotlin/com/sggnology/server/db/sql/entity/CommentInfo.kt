@@ -12,7 +12,7 @@ class CommentInfo(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_idx", nullable = false)
-    val content: ContentInfo,
+    val contentInfo: ContentInfo,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx", nullable = false)

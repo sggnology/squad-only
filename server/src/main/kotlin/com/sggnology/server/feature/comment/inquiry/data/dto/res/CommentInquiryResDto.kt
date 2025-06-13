@@ -16,7 +16,7 @@ data class CommentInquiryResDto(
         fun fromCommentInfo(commentInfo: CommentInfo): CommentInquiryResDto {
             return CommentInquiryResDto(
                 idx = commentInfo.idx,
-                contentIdx = commentInfo.content.idx,
+                contentIdx = commentInfo.contentInfo.idx,
                 comment = commentInfo.comment,
                 userId = commentInfo.user.userId,
                 username = commentInfo.user.nickname ?: commentInfo.user.name,

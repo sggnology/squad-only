@@ -31,7 +31,7 @@ class CommentRegistrationService(
 
         // 댓글 생성
         val commentInfo = CommentInfo(
-            content = contentInfo,
+            contentInfo = contentInfo,
             user = userInfo,
             comment = commentRegisterModel.comment
         )

@@ -29,7 +29,8 @@ data class ContentsInquiryResDto(
                 }
                 else {
                     contentInfo.registeredUser?.userId
-                }
+                },
+                commentCount = contentInfo.comments.count { !it.isDeleted }.toLong()
             )
         }
     }
