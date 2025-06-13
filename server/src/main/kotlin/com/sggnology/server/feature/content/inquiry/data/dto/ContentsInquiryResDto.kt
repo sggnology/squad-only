@@ -21,9 +21,14 @@ data class ContentsInquiryResDto(
                 location = contentInfo.location,
                 createdAt = contentInfo.createdAt,
                 tags = contentInfo.contentTags.map { it.tag.name }.toMutableSet(),
-                registeredUsername = contentInfo.registeredUser?.nickname
-                    ?: contentInfo.registeredUser?.name
-                    ?: contentInfo.registeredUser?.userId
+                registeredUsername = if(!contentInfo.registeredUser?.nickname.isNullOrEmpty()) {
+                    contentInfo.registeredUser?.nickname
+                } else if(!contentInfo.registeredUser?.name.isNullOrEmpty()) {
+                    contentInfo.registeredUser?.name
+                }
+                else {
+                    contentInfo.registeredUser?.userId
+                }
             )
         }
     }
