@@ -36,7 +36,7 @@ class AsyncConfig {
         executor.keepAliveSeconds = 60
 
         // 거부 정책 (큐가 가득 찰 때)
-        executor.setRejectedExecutionHandler { runnable, executor ->
+        executor.setRejectedExecutionHandler { runnable, _ ->
             // 로그 기록 실패 시 메인 스레드에서 동기적으로 처리
             logger.error("Activity log queue is full, executing synchronously")
             runnable.run()
