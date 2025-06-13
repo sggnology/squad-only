@@ -49,10 +49,6 @@ class JwtAuthenticationFilterTest {
     fun setup() {
         jwtAuthenticationFilter = JwtAuthenticationFilter(jwtTokenProvider, userInfoRepository)
         SecurityContextHolder.clearContext() // 각 테스트 전에 SecurityContext 초기화
-
-        // Mock UserInfo behavior
-        `when`(authentication.name).thenReturn("testUser")
-        `when`(userInfo.isAccessEnabled()).thenReturn(true)
     }
 
     @Test
@@ -63,6 +59,9 @@ class JwtAuthenticationFilterTest {
         `when`(jwtTokenProvider.validateToken(token)).thenReturn(true)
         `when`(jwtTokenProvider.getAuthentication(token)).thenReturn(authentication)
         `when`(userInfoRepository.findByUserId(eq("testUser"))).thenReturn(userInfo)
+        // Mock UserInfo behavior
+        `when`(authentication.name).thenReturn("testUser")
+        `when`(userInfo.isAccessEnabled()).thenReturn(true)
 
         // when
         jwtAuthenticationFilter.doFilter(request, response, filterChain)
