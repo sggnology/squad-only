@@ -17,7 +17,9 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Person as PersonIcon,
-  Event as EventIcon
+  Event as EventIcon,
+  Comment as CommentIcon,
+  CommentBank as CommentBankIcon
 } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
 import { ActivityLogResponse, ActivityLogItem, ACTIVITY_LOG_LABELS, ACTIVITY_LOG_COLORS, ACTIVITY_LOG_TYPE } from '../../types/activityLog';
@@ -27,7 +29,10 @@ const ACTIVITY_ICONS: Record<ACTIVITY_LOG_TYPE, React.ReactElement> = {
   CONTENT_CREATE: <AddIcon />,
   CONTENT_UPDATE: <EditIcon />,
   CONTENT_DELETE: <DeleteIcon />,
-  PROFILE_UPDATE: <PersonIcon />
+  PROFILE_UPDATE: <PersonIcon />,
+  COMMENT_CREATE: <CommentIcon />,
+  COMMENT_UPDATE: <CommentBankIcon />,
+  COMMENT_DELETE: <DeleteIcon />
 };
 
 interface ActivityLogComponentProps {
@@ -129,9 +134,8 @@ function ActivityLogComponent({ userId, showUserId = false, pageSize = 15 }: Act
         <EventIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
         <Typography variant="h6" color="text.secondary">
           활동 기록이 없습니다
-        </Typography>
-        <Typography variant="body2" color="text.disabled">
-          로그인, 콘텐츠 등록/수정/삭제, 프로필 수정 등의 활동이 여기에 표시됩니다.
+        </Typography>        <Typography variant="body2" color="text.disabled">
+          로그인, 콘텐츠 등록/수정/삭제, 댓글 작성/수정/삭제, 프로필 수정 등의 활동이 여기에 표시됩니다.
         </Typography>
       </Box>
     );
