@@ -260,7 +260,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
                         {comment.updatedAt !== comment.createdAt && ' (수정됨)'}
                       </Typography>
                       {/* 내가 작성한 댓글인 경우 메뉴 표시 */}
-                      {user && user.userId === comment.userId && (
+                        {(user && (user.userId === comment.userId || user.roles?.includes('ROLE_ADMIN'))) && (
                         <IconButton
                           size="small"
                           sx={{ ml: 'auto' }}
@@ -268,7 +268,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
                         >
                           <MoreVertIcon fontSize="small" />
                         </IconButton>
-                      )}
+                        )}
                     </Box>
                     {/* 댓글 내용 또는 수정 필드 */}
                     {editingCommentId === comment.idx ? (
