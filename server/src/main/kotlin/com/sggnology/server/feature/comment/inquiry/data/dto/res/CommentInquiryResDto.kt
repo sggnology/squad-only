@@ -18,8 +18,12 @@ data class CommentInquiryResDto(
                 idx = commentInfo.idx,
                 contentIdx = commentInfo.contentInfo.idx,
                 comment = commentInfo.comment,
-                userId = commentInfo.user.userId,
-                username = commentInfo.user.nickname ?: commentInfo.user.name,
+                userId = commentInfo.registeredUser.userId,
+                username = if(!commentInfo.registeredUser.nickname.isNullOrEmpty()) {
+                    commentInfo.registeredUser.nickname!!
+                } else {
+                    commentInfo.registeredUser.name
+                },
                 createdAt = commentInfo.createdAt,
                 updatedAt = commentInfo.updatedAt
             )
