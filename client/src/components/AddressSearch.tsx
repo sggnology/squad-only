@@ -20,6 +20,10 @@ declare global {
         oncomplete: (data: DaumPostcodeData) => void;
         onclose?: (state: string) => void;
         onsearch?: (data: { count: number }) => void;
+        width?: string | number;
+        height?: string | number;
+        maxSuggestItems?: number;
+        alwaysShowEngAddr?: boolean;
       }) => {
         open: () => void;
         embed: (element: HTMLElement) => void;
@@ -157,21 +161,23 @@ const AddressSearch: React.FC<AddressSearchProps> = ({
             fontSize: { xs: '0.9rem', sm: '1rem' } // 모바일에서 라벨 크기 조정
           }
         }}
-      />{/* 주소 검색 모달 */}
-      <Dialog
+      />{
+        
+        /* 주소 검색 모달 */}      
+        <Dialog
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         maxWidth="md"
         fullWidth
         sx={{
           '& .MuiDialog-paper': {
-            height: { xs: '100vh', sm: '600px' }, // 모바일: 전체 높이, 데스크톱: 600px
-            maxHeight: { xs: '100vh', sm: '600px' },
-            margin: { xs: 0, sm: 2 }, // 모바일: 여백 없음, 데스크톱: 여백 있음
-            borderRadius: { xs: 0, sm: 2 }, // 모바일: 둥근 모서리 없음, 데스크톱: 둥근 모서리
-            // 모바일에서 전체 화면으로 표시
-            width: { xs: '100vw', sm: 'auto' },
-            maxWidth: { xs: '100vw', sm: 'md' }
+            height: { xs: '80vh', sm: '70vh' }, // 높이 증가
+            maxHeight: { xs: '80vh', sm: '70vh' },
+            margin: { xs: 1, sm: 2 },
+            padding: { xs: 1, sm: 0 },
+            borderRadius: { xs: 2, sm: 2 },
+            width: { xs: '95vw', sm: 'auto' }, // 모바일에서 너비 증가
+            maxWidth: { xs: '95vw', sm: 'md' }
           }
         }}
       >
@@ -183,28 +189,46 @@ const AddressSearch: React.FC<AddressSearchProps> = ({
             <LocationIcon color="primary" />
             주소 검색
           </Box>
-        </DialogTitle>
-        <DialogContent sx={{
-          p: 0,
-          flex: 1, // 남은 공간 모두 사용
+        </DialogTitle>        <DialogContent sx={{
+          p: { xs: 0.5, sm: 1 }, // 패딩 최소화
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden', // 스크롤바 방지
-          // 모바일에서 더 많은 공간 확보
-          minHeight: { xs: 'calc(100vh - 120px)', sm: '400px' }
+          overflow: 'hidden',
+          minHeight: { xs: 'calc(80vh - 150px)', sm: 'calc(70vh - 150px)' } // 충분한 높이 확보
         }}>
           <Box
             id="postcode-container"
             sx={{
               width: '100%',
               height: '100%',
-              minHeight: { xs: 'calc(100vh - 120px)', sm: '400px' }, // 모바일에서 충분한 높이 확보
-              flex: 1, // 부모 컨테이너 크기에 맞춤
-              // 카카오 주소 검색 UI의 모바일 최적화
+              minHeight: { xs: 'calc(80vh - 150px)', sm: 'calc(70vh - 150px)' },
+              flex: 1,              // 카카오 주소 검색 UI 최적화
               '& iframe': {
                 width: '100% !important',
                 height: '100% !important',
                 border: 'none'
+              },
+              // 카카오 주소 검색 내부 요소들의 크기 조정
+              '& .postcode_container': {
+                width: '100% !important',
+                height: '100% !important'
+              },
+              // 자동완성 리스트가 잘리지 않도록 CSS 추가
+              '& .suggest_item': {
+                whiteSpace: 'nowrap !important',
+                overflow: 'visible !important',
+                textOverflow: 'unset !important'
+              },
+              '& .suggest_list': {
+                maxWidth: 'none !important',
+                width: '100% !important'
+              },
+              // 검색 결과 항목들이 잘리지 않도록
+              '& .list_item': {
+                whiteSpace: 'normal !important',
+                wordBreak: 'keep-all !important',
+                overflow: 'visible !important'
               }
             }}
             ref={(element: HTMLDivElement | null) => {
@@ -217,7 +241,12 @@ const AddressSearch: React.FC<AddressSearchProps> = ({
                     if (state === 'FORCE_CLOSE' || state === 'COMPLETE_CLOSE') {
                       setIsModalOpen(false);
                     }
-                  }
+                  },
+                  // 추가 옵션으로 더 넓은 UI 사용
+                  width: '100%',
+                  height: '100%',
+                  maxSuggestItems: 10, // 자동완성 최대 개수 설정
+                  alwaysShowEngAddr: false // 항상 영문 주소 표시 여부
                 }).embed(element);
               }
             }}
