@@ -182,7 +182,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
   };
 
   // 삭제 다이얼로그 열기
-  const openDeleteDialog = () => {
+  const openDeleteDialog = (deleteId: number | null) => {
+    setDeletingCommentId(deleteId)
     setDeleteDialogOpen(true);
     handleMenuClose();
   };
@@ -335,7 +336,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
             <EditIcon sx={{ mr: 1, fontSize: 16 }} />
             수정
           </MenuItem>
-          <MenuItem onClick={openDeleteDialog}>
+          <MenuItem onClick={() => openDeleteDialog(selectedCommentId)}>
             <DeleteIcon sx={{ mr: 1, fontSize: 16 }} />
             삭제
           </MenuItem>
@@ -352,12 +353,11 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
               취소
             </Button>
             <Button
-              onClick={() => selectedCommentId && handleDeleteComment(selectedCommentId)}
+              onClick={() => deletingCommentId && handleDeleteComment(deletingCommentId)}
               color="error"
-              disabled={deletingCommentId !== null}
-              startIcon={deletingCommentId === selectedCommentId ? <CircularProgress size={16} /> : undefined}
+              disabled={deletingCommentId == null}
             >
-              {deletingCommentId === selectedCommentId ? '삭제 중...' : '삭제'}
+              삭제
             </Button>
           </DialogActions>
         </Dialog>
