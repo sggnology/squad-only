@@ -33,7 +33,7 @@ class CommentRegistrationService(
         val userInfo = UserInfoContextHolder.getUserInfo()        // 댓글 생성
         val commentInfo = CommentInfo(
             contentInfo = contentInfo,
-            user = userInfo,
+            registeredUser = userInfo,
             comment = commentRegisterModel.comment
         )
 

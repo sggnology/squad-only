@@ -16,7 +16,7 @@ class CommentInfo(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx", nullable = false)
-    val user: UserInfo,
+    val registeredUser: UserInfo,
 
     @Column(nullable = false, columnDefinition = "TEXT")
     var comment: String,

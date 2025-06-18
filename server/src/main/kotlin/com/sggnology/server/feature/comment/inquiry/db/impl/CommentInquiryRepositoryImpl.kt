@@ -1,5 +1,6 @@
 package com.sggnology.server.feature.comment.inquiry.db.impl
 
+import com.querydsl.core.BooleanBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.sggnology.server.db.sql.entity.CommentInfo
 import com.sggnology.server.db.sql.entity.QCommentInfo
@@ -18,14 +19,14 @@ class CommentInquiryRepositoryImpl(
         pageable: Pageable,
         contentIdx: Long
     ): Page<CommentInfo> {
+
+        val basePredicate = commentInfo.contentInfo.idx.eq(contentIdx)
+            .and(commentInfo.isDeleted.eq(false)) // 기본 조건: 삭제되지 않은 댓글
         
         val contentQuery = queryFactory
             .selectFrom(commentInfo)
-            .leftJoin(commentInfo.user).fetchJoin()
-            .where(
-                commentInfo.contentInfo.idx.eq(contentIdx)
-                    .and(commentInfo.isDeleted.eq(false))
-            )
+            .leftJoin(commentInfo.registeredUser).fetchJoin()
+            .where(basePredicate)
             .orderBy(commentInfo.createdAt.desc()) // 댓글은 등록순으로 표시
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -35,10 +36,7 @@ class CommentInquiryRepositoryImpl(
         val countQuery = queryFactory
             .select(commentInfo.count())
             .from(commentInfo)
-            .where(
-                commentInfo.contentInfo.idx.eq(contentIdx)
-                    .and(commentInfo.isDeleted.eq(false))
-            )
+            .where(basePredicate)
 
         val total = countQuery.fetchOne() ?: 0L
 

@@ -28,7 +28,7 @@ class CommentDeleteService(
 
         // 권한 확인 - 댓글 작성자 또는 관리자만 삭제 가능
         val isAdmin = authentication.authorities.any { it.authority == "ROLE_ADMIN" }
-          if (!isAdmin && commentInfo.user.idx != userInfo.idx) {
+          if (!isAdmin && commentInfo.registeredUser.idx != userInfo.idx) {
             throw IllegalArgumentException("댓글을 삭제할 권한이 없습니다.")
         }
 
