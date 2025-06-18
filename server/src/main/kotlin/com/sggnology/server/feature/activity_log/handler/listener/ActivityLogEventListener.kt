@@ -1,5 +1,8 @@
 package com.sggnology.server.feature.activity_log.handler.listener
 
+import com.sggnology.server.feature.activity_log.handler.event.CommentCreateLogEvent
+import com.sggnology.server.feature.activity_log.handler.event.CommentDeleteLogEvent
+import com.sggnology.server.feature.activity_log.handler.event.CommentUpdateLogEvent
 import com.sggnology.server.feature.activity_log.registration.service.ActivityLogRegistrationService
 import com.sggnology.server.feature.activity_log.handler.event.ContentCreateLogEvent
 import com.sggnology.server.feature.activity_log.handler.event.ContentDeleteLogEvent
@@ -56,6 +59,30 @@ class ActivityLogEventListener(
     @Async("activityInfoLogExecutor")
     @EventListener
     fun handleProfileUpdateEvent(event: ProfileUpdateLogEvent) {
+        activityLogRegistrationService.execute(
+            event.toRegisterActivityLogModel()
+        )
+    }
+
+    @Async("activityInfoLogExecutor")
+    @EventListener
+    fun handleCommentCreateEvent(event: CommentCreateLogEvent) {
+        activityLogRegistrationService.execute(
+            event.toRegisterActivityLogModel()
+        )
+    }
+
+    @Async("activityInfoLogExecutor")
+    @EventListener
+    fun handleCommentUpdateEvent(event: CommentUpdateLogEvent) {
+        activityLogRegistrationService.execute(
+            event.toRegisterActivityLogModel()
+        )
+    }
+
+    @Async("activityInfoLogExecutor")
+    @EventListener
+    fun handleCommentDeleteEvent(event: CommentDeleteLogEvent) {
         activityLogRegistrationService.execute(
             event.toRegisterActivityLogModel()
         )
