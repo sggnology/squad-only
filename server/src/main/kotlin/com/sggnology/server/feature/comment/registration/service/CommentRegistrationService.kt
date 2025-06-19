@@ -1,6 +1,7 @@
 package com.sggnology.server.feature.comment.registration.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.entity.CommentInfo
 import com.sggnology.server.db.sql.repository.CommentInfoRepository
@@ -46,7 +47,8 @@ class CommentRegistrationService(
                 username = userInfo.name,
                 targetId = savedComment.idx.toString(),
                 contentIdx = commentRegisterModel.contentIdx,
-                commentContent = commentRegisterModel.comment
+                commentContent = commentRegisterModel.comment,
+                ip = ClientIPHolder.get()
             )
         )
     }

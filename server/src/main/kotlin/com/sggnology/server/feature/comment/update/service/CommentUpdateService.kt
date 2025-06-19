@@ -1,6 +1,7 @@
 package com.sggnology.server.feature.comment.update.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.repository.CommentInfoRepository
 import com.sggnology.server.feature.comment.update.data.model.CommentUpdateModel
@@ -32,9 +33,6 @@ class CommentUpdateService(
             throw IllegalArgumentException("댓글을 수정할 권한이 없습니다.")
         }
 
-        // 기존 댓글 내용 저장 (로그용)
-        val oldContent = commentInfo.comment
-
         // 댓글 내용 수정
         commentInfo.comment = commentUpdateModel.comment
 
@@ -47,8 +45,8 @@ class CommentUpdateService(
                 username = userInfo.name,
                 targetId = updatedComment.idx.toString(),
                 contentIdx = updatedComment.contentInfo.idx,
-                oldContent = oldContent,
-                newContent = commentUpdateModel.comment
+                updateComment = commentUpdateModel.comment,
+                ip = ClientIPHolder.get()
             )
         )
     }

@@ -10,14 +10,13 @@ data class CommentUpdateLogEvent(
     override val username: String,
     override val targetId: String,
     val contentIdx: Long,
-    val oldContent: String,
-    val newContent: String,
+    val updateComment: String,
     override val ip: String? = null
 ) : ActivityLogEvent(
     userId = userId,
     username = username,
     type = ActivityLogType.COMMENT_UPDATE,
-    description = "댓글을 수정했습니다: ${newContent.take(50)}${if (newContent.length > 50) "..." else ""}",
+    description = "컨텐츠: $contentIdx 댓글을 수정했습니다: ${updateComment.take(50)}${if (updateComment.length > 50) "..." else ""}",
     targetId = targetId,
     ip = ip
 )

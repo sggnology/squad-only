@@ -16,7 +16,7 @@ data class CommentCreateLogEvent(
     userId = userId,
     username = username,
     type = ActivityLogType.COMMENT_CREATE,
-    description = "댓글을 작성했습니다: ${commentContent.take(50)}${if (commentContent.length > 50) "..." else ""}",
+    description = "컨텐츠ID: $contentIdx 댓글을 작성했습니다: ${commentContent.take(50)}${if (commentContent.length > 50) "..." else ""}",
     targetId = targetId,
     ip = ip
 )

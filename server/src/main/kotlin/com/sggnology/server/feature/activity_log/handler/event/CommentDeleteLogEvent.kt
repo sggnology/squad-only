@@ -16,7 +16,7 @@ data class CommentDeleteLogEvent(
     userId = userId,
     username = username,
     type = ActivityLogType.COMMENT_DELETE,
-    description = "댓글을 삭제했습니다: ${deletedContent.take(50)}${if (deletedContent.length > 50) "..." else ""}",
+    description = "컨텐츠ID: $contentIdx 댓글을 삭제했습니다: ${deletedContent.take(50)}${if (deletedContent.length > 50) "..." else ""}",
     targetId = targetId,
     ip = ip
 )

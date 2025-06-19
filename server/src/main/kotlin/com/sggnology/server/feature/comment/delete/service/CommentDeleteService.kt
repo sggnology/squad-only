@@ -1,6 +1,7 @@
 package com.sggnology.server.feature.comment.delete.service
 
 import com.sggnology.server.common.annotation.WithUserInfo
+import com.sggnology.server.common.util.ClientIPHolder
 import com.sggnology.server.common.util.UserInfoContextHolder
 import com.sggnology.server.db.sql.repository.CommentInfoRepository
 import com.sggnology.server.feature.comment.delete.data.model.CommentDeleteModel
@@ -48,7 +49,8 @@ class CommentDeleteService(
                 username = userInfo.name,
                 targetId = commentInfo.idx.toString(),
                 contentIdx = contentIdx,
-                deletedContent = deletedContent
+                deletedContent = deletedContent,
+                ip = ClientIPHolder.get()
             )
         )
     }
