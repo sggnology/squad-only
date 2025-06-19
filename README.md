@@ -1,6 +1,7 @@
 # Squad Only 🏢
 
 **팀 단위 컨텐츠 관리 시스템**
+![visitors](https://visitor-badge.glitch.me/badge?page_id=sggnology.squad-only)
 
 Squad Only는 회사의 팀(Squad) 단위로 컨텐츠를 등록하고 관리하여 팀의 경험과 추억을 기록하고 보존하는 시스템입니다. 맛집 정보, 워크샵 기록, 팀 활동 등을 체계적으로 관리하여 필요할 때 언제든지 접근할 수 있습니다.
 
