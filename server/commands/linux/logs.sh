@@ -31,14 +31,14 @@ fi
 # 파라미터 확인
 if [ "$1" = "app" ] || [ "$1" = "application" ]; then
     echo "🔍 애플리케이션 로그를 확인합니다..."
-    $DOCKER_COMPOSE_CMD logs -f application
+    $DOCKER_COMPOSE_CMD -p squad-only logs -f application
 elif [ "$1" = "db" ] || [ "$1" = "database" ]; then
     echo "🔍 데이터베이스 로그를 확인합니다..."
-    $DOCKER_COMPOSE_CMD logs -f database
+    $DOCKER_COMPOSE_CMD -p squad-only logs -f database
 elif [ "$1" = "all" ]; then
     echo "🔍 모든 서비스 로그를 확인합니다..."
     # 모든 서비스 로그 보기 (Ctrl+C로 종료)
-    $DOCKER_COMPOSE_CMD -p squad-only logs -f
+    $DOCKER_COMPOSE_CMD -p squad-only -p squad-only logs -f
 elif [ "$1" = "file" ]; then
     echo "🔍 파일 시스템 로그를 확인합니다..."
     echo ""
@@ -69,7 +69,7 @@ else
     echo "기본값 (옵션 없음): 애플리케이션 로그 표시"
     echo ""
     echo "🔍 애플리케이션 로그를 확인합니다..."
-    $DOCKER_COMPOSE_CMD logs -f application
+    $DOCKER_COMPOSE_CMD -p squad-only logs -f application
 fi
 
 echo "✅ 로그 확인이 종료되었습니다."
