@@ -6,6 +6,7 @@ import com.sggnology.server.db.sql.entity.UserRoleInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
+import com.sggnology.server.feature.auth.service.AuthCryptoService
 import com.sggnology.server.feature.auth.service.AuthService
 import com.sggnology.server.security.JwtTokenProvider
 import org.junit.jupiter.api.Assertions.*
@@ -39,6 +40,9 @@ class AuthServiceTest {
     @Mock
     private lateinit var eventPublisher: ApplicationEventPublisher
 
+    @Mock
+    private lateinit var authCryptoService: AuthCryptoService
+
     @InjectMocks
     private lateinit var authService: AuthService
 
@@ -50,7 +54,7 @@ class AuthServiceTest {
         testUser = UserInfo(
             idx = 1L,
             userId = "testUser",
-            userPw = "encodedPassword",
+            userPw = "dbEncryptedPassword",
             name = "Test User",
             nickname = "tester"
         )
@@ -71,10 +75,11 @@ class AuthServiceTest {
     @Test
     fun `login should return LoginResponse with token when credentials are valid`() {
         // given
-        val loginRequestDto = AuthLoginReqDto("testUser", "password")
+        val loginRequestDto = AuthLoginReqDto("testUser", "clientEncryptedPassword", encrypted = true)
 
         `when`(userInfoRepository.findByUserId("testUser")).thenReturn(testUser)
-        `when`(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true)
+        `when`(authCryptoService.decryptPassword("clientEncryptedPassword")).thenReturn("password")
+        `when`(passwordEncoder.matches("password", "dbEncryptedPassword")).thenReturn(true)
         `when`(jwtTokenProvider.createToken(eq("testUser"), anyList())).thenReturn("test-jwt-token")
 
         // when
@@ -88,7 +93,8 @@ class AuthServiceTest {
         assertTrue(loginResponse.roles.contains("USER"))
 
         verify(userInfoRepository).findByUserId("testUser")
-        verify(passwordEncoder).matches("password", "encodedPassword")
+        verify(authCryptoService).decryptPassword("clientEncryptedPassword")
+        verify(passwordEncoder).matches("password", "dbEncryptedPassword")
         verify(jwtTokenProvider).createToken(eq("testUser"), anyList())
     }
 
@@ -115,7 +121,7 @@ class AuthServiceTest {
         val loginRequest = AuthLoginReqDto("testUser", "wrongPassword")
 
         `when`(userInfoRepository.findByUserId("testUser")).thenReturn(testUser)
-        `when`(passwordEncoder.matches("wrongPassword", "encodedPassword")).thenReturn(false)
+        `when`(passwordEncoder.matches("wrongPassword", "dbEncryptedPassword")).thenReturn(false)
 
         // when & then
         assertThrows(BadCredentialsException::class.java) {
@@ -123,7 +129,7 @@ class AuthServiceTest {
         }
 
         verify(userInfoRepository).findByUserId("testUser")
-        verify(passwordEncoder).matches("wrongPassword", "encodedPassword")
+        verify(passwordEncoder).matches("wrongPassword", "dbEncryptedPassword")
         verifyNoInteractions(jwtTokenProvider)
     }
 }
