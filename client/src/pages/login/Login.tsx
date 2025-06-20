@@ -17,6 +17,7 @@ import {
   selectAuthError,
   selectIsAuthenticated
 } from '../../store/authSlice';
+import { encryptPassword, fetchPublicKey } from '../../utils/cryptoUtil';
 
 function Login() {
   const dispatch = useAppDispatch();
@@ -24,11 +25,27 @@ function Login() {
   const loading = useAppSelector(selectAuthLoading);
   const error = useAppSelector(selectAuthError);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-
   const [formData, setFormData] = useState({
     userId: '',
     password: '',
   });
+
+  const [publicKey, setPublicKey] = useState<string>('');
+  const [encryptionError, setEncryptionError] = useState<string>('');
+
+  // 컴포넌트 마운트 시 공개키 가져오기
+  useEffect(() => {
+    const loadPublicKey = async () => {
+      try {
+        const key = await fetchPublicKey();
+        setPublicKey(key);
+      } catch (error) {
+        setEncryptionError('암호화 키를 가져올 수 없습니다.');
+      }
+    };
+    
+    loadPublicKey();
+  }, []);
 
   // 이미 로그인된 상태라면 홈으로 리디렉션
   useEffect(() => {
@@ -51,7 +68,6 @@ function Login() {
       [name]: value
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -59,13 +75,27 @@ function Login() {
       return;
     }
 
+    if (!publicKey) {
+      setEncryptionError('암호화 키가 준비되지 않았습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
     try {
-      const result = await dispatch(loginAsync(formData));
+      // 비밀번호 암호화
+      const encryptedPassword = await encryptPassword(formData.password, publicKey);
+      
+      const encryptedFormData = {
+        userId: formData.userId,
+        password: encryptedPassword,
+        encrypted: true // 서버에 암호화된 데이터임을 알림
+      };
+
+      const result = await dispatch(loginAsync(encryptedFormData));
       if (loginAsync.fulfilled.match(result)) {
         navigate('/');
       }
     } catch (err) {
-      // 에러는 Redux에서 처리됨
+      setEncryptionError('비밀번호 암호화 중 오류가 발생했습니다.');
     }
   };
 
@@ -79,11 +109,10 @@ function Login() {
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
             로그인
           </Typography>
-        </Box>
-
-        {error && (
+        </Box>        
+        {(error || encryptionError) && (
           <Alert severity="error" sx={{ mb: 4 }}>
-            {error}
+            {error || encryptionError}
           </Alert>
         )}
 
@@ -111,17 +140,15 @@ function Login() {
             required
             autoComplete="current-password"
             disabled={loading}
-          />
-
-          <Button
+          />          <Button
             type="submit"
             fullWidth
             variant="contained"
             size="large"
             sx={{ mt: 6 }}
-            disabled={loading || !formData.userId.trim() || !formData.password.trim()}
+            disabled={loading || !formData.userId.trim() || !formData.password.trim() || !publicKey}
           >
-            {loading ? '로그인 중...' : '로그인'}
+            {loading ? '로그인 중...' : !publicKey ? '암호화 키 로딩 중...' : '로그인'}
           </Button>
         </form>
       </Paper>
