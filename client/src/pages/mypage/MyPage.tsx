@@ -39,6 +39,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectUser, updateUserProfile } from '../../store/authSlice';
 import axiosInstance from '../../utils/axiosInstance';
+import { encryptPassword, fetchPublicKey } from '../../utils/cryptoUtil';
 import ActivityLogComponent from '../../components/ActivityLog/ActivityLogComponent';
 import { MyContentList } from '../../components/MyContentList/MyContentList';
 
@@ -101,9 +102,22 @@ function MyPage() {
   });
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  // 암호화 관련 상태
+  const [publicKey, setPublicKey] = useState<string>('');
+  const [encryptionError, setEncryptionError] = useState<string>('');
   useEffect(() => {
     fetchProfile();
+    loadPublicKey();
   }, []);
+
+  const loadPublicKey = async () => {
+    try {
+      const key = await fetchPublicKey();
+      setPublicKey(key);
+    } catch (error) {
+      setEncryptionError('암호화 키를 가져올 수 없습니다.');
+    }
+  };
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -245,21 +259,32 @@ function MyPage() {
         [field]: ''
       }));
     }
-  };
-  // 비밀번호 변경 관련 핸들러들
+  };  // 비밀번호 변경 관련 핸들러들
   const handlePasswordChange = async () => {
     if (!validatePasswordForm()) {
       return;
     }
 
+    if (!publicKey) {
+      setEncryptionError('암호화 키가 준비되지 않았습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
     setPasswordLoading(true);
     setError(null);
+    setEncryptionError('');
 
     try {
+      // 현재 비밀번호와 새 비밀번호 암호화
+      const encryptedCurrentPassword = await encryptPassword(passwordForm.currentPassword, publicKey);
+      const encryptedNewPassword = await encryptPassword(passwordForm.newPassword, publicKey);
+      const encryptedConfirmNewPassword = await encryptPassword(passwordForm.confirmNewPassword, publicKey);
+
       await axiosInstance.put('/profile/password', {
-        currentPassword: passwordForm.currentPassword,
-        newPassword: passwordForm.newPassword,
-        confirmNewPassword: passwordForm.confirmNewPassword
+        currentPassword: encryptedCurrentPassword,
+        newPassword: encryptedNewPassword,
+        confirmNewPassword: encryptedConfirmNewPassword,
+        encrypted: true // 암호화된 데이터임을 서버에 알림
       });
 
       setIsPasswordModalOpen(false);
@@ -276,13 +301,16 @@ function MyPage() {
       setSuccessMessage('비밀번호가 성공적으로 변경되었습니다.');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
-      setError('비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.');
+      if (err.message?.includes('암호화')) {
+        setEncryptionError('비밀번호 암호화 중 오류가 발생했습니다.');
+      } else {
+        setError('비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.');
+      }
       console.error('Failed to change password:', err);
     } finally {
       setPasswordLoading(false);
     }
   };
-
   const handlePasswordModalClose = () => {
     setIsPasswordModalOpen(false);
     setPasswordForm({
@@ -300,6 +328,7 @@ function MyPage() {
       new: false,
       confirm: false
     });
+    setEncryptionError(''); // 암호화 에러도 초기화
   };
 
   const handlePasswordInputChange = (field: keyof PasswordChangeRequest) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -355,11 +384,15 @@ function MyPage() {
         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
-      )}      {successMessage && (
+      )}      
+      
+      {successMessage && (
         <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccessMessage('')}>
           {successMessage}
         </Alert>
-      )}      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+      )}      
+      
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} aria-label="마이페이지 탭">
           <Tab label="등록한 컨텐츠" icon={<ArticleIcon />} iconPosition="start" />
           <Tab label="프로필 정보" icon={<PersonIcon />} iconPosition="start" />
@@ -541,9 +574,12 @@ function MyPage() {
           >
             <CloseIcon />
           </IconButton>
-        </DialogTitle>
-
-        <DialogContent>
+        </DialogTitle>        <DialogContent>
+          {encryptionError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {encryptionError}
+            </Alert>
+          )}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
             <TextField
               label="현재 비밀번호"
@@ -628,14 +664,14 @@ function MyPage() {
             variant="outlined"
           >
             취소
-          </Button>
+          </Button>          
           <Button
             onClick={handlePasswordChange}
-            disabled={passwordLoading}
+            disabled={passwordLoading || !publicKey}
             variant="contained"
             startIcon={passwordLoading ? <CircularProgress size={16} color="inherit" /> : <LockIcon />}
           >
-            {passwordLoading ? '변경 중...' : '비밀번호 변경'}
+            {passwordLoading ? '변경 중...' : !publicKey ? '암호화 키 로딩 중...' : '비밀번호 변경'}
           </Button>
         </DialogActions>
       </Dialog>
