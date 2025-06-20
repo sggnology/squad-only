@@ -58,6 +58,9 @@ class ContentUpdateService(
         // 새로운 파일이 있는 경우 기존 파일 연결 해제 및 새 파일 연결
         if (contentUpdateModel.newFileIds.isNotEmpty()) {
             // 기존 파일 연결 해제
+            contentInfo.fileInfos.forEach {
+                it.contentInfo = null
+            }
             contentInfo.fileInfos.clear()
             
             // 새로운 파일을 스토리지로 이동
