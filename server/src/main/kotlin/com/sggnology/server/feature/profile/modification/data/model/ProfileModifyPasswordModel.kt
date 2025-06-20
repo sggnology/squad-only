@@ -5,7 +5,8 @@ import com.sggnology.server.feature.profile.modification.data.dto.req.ProfilePas
 data class ProfileModifyPasswordModel(
     val currentPassword: String,
     val newPassword: String,
-    val confirmNewPassword: String
+    val confirmNewPassword: String,
+    val encrypted: Boolean? = false
 ) {
     companion object {
         fun fromProfilePasswordModificationReqDto(
@@ -14,7 +15,8 @@ data class ProfileModifyPasswordModel(
             return ProfileModifyPasswordModel(
                 currentPassword = req.currentPassword,
                 newPassword = req.newPassword,
-                confirmNewPassword = req.confirmNewPassword
+                confirmNewPassword = req.confirmNewPassword,
+                encrypted = req.encrypted
             )
         }
     }
