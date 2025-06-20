@@ -4,12 +4,15 @@ import com.sggnology.server.feature.auth.data.model.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.dto.req.AuthLoginReqDto
 import com.sggnology.server.feature.auth.data.dto.res.AuthIdentificationMeResDto
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
+import com.sggnology.server.feature.auth.data.dto.res.AuthPublicKeyInquiryResDto
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.feature.auth.service.AuthService
+import com.sggnology.server.feature.auth.service.AuthCryptoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,8 +24,16 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/v1/auth")
 @Tag(name = "인증 API")
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val authCryptoService: AuthCryptoService,
 ) {
+
+    @GetMapping("/public-key")
+    fun getPublicKey(): AuthPublicKeyInquiryResDto {
+        return AuthPublicKeyInquiryResDto(
+            publicKey = authCryptoService.getPublicKey()
+        )
+    }
 
     @Operation(
         summary = "로그인"

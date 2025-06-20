@@ -23,7 +23,8 @@ class AuthService(
     private val userInfoRepository: UserInfoRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtTokenProvider: JwtTokenProvider,
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
+    private val authCryptoService: AuthCryptoService
 ) {
 
     @Transactional
@@ -35,7 +36,18 @@ class AuthService(
 
         validateUserState(userInfo)
 
-        validateUserCredentials(authLoginModel.password, userInfo)
+        // 암호화된 비밀번호인지 확인하고 복호화
+        val actualPassword = if (authLoginModel.encrypted == true) {
+            try {
+                authCryptoService.decryptPassword(authLoginModel.password)
+            } catch (e: Exception) {
+                throw BadCredentialsException("Invalid encrypted password")
+            }
+        } else {
+            authLoginModel.password
+        }
+
+        validateUserCredentials(actualPassword, userInfo)
 
         val authorities = userInfo.getRoleList().map { SimpleGrantedAuthority(it) }
 
