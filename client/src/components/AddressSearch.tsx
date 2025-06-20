@@ -171,12 +171,12 @@ const AddressSearch: React.FC<AddressSearchProps> = ({
         fullWidth
         sx={{
           '& .MuiDialog-paper': {
-            height: { xs: '80vh', sm: '70vh' }, // 높이 증가
-            maxHeight: { xs: '80vh', sm: '70vh' },
+            height: { xs: '80vh', sm: '800px' }, // 높이 증가
+            maxHeight: { xs: '80vh', sm: '800px' },
             margin: { xs: 1, sm: 2 },
             padding: { xs: 1, sm: 0 },
             borderRadius: { xs: 2, sm: 2 },
-            width: { xs: '95vw', sm: 'auto' }, // 모바일에서 너비 증가
+            width: { xs: '95vw', sm: '700px' }, // 모바일에서 너비 증가
             maxWidth: { xs: '95vw', sm: 'md' }
           }
         }}
@@ -189,20 +189,21 @@ const AddressSearch: React.FC<AddressSearchProps> = ({
             <LocationIcon color="primary" />
             주소 검색
           </Box>
-        </DialogTitle>        <DialogContent sx={{
+        </DialogTitle>        
+        <DialogContent sx={{
           p: { xs: 0.5, sm: 1 }, // 패딩 최소화
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          minHeight: { xs: 'calc(80vh - 150px)', sm: 'calc(70vh - 150px)' } // 충분한 높이 확보
+          minHeight: { xs: 'calc(80vh - 150px)', sm: '600px' } // 충분한 높이 확보
         }}>
           <Box
             id="postcode-container"
             sx={{
               width: '100%',
               height: '100%',
-              minHeight: { xs: 'calc(80vh - 150px)', sm: 'calc(70vh - 150px)' },
+              minHeight: { xs: 'calc(80vh - 150px)', sm: '600px' },
               flex: 1,              // 카카오 주소 검색 UI 최적화
               '& iframe': {
                 width: '100% !important',
