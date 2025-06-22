@@ -12,14 +12,14 @@ class ProfileInquiryService {
     @WithUserInfo
     @Transactional(readOnly = true)
     fun execute(): ProfileInquiryResDto {
-
         val userInfo = UserInfoContextHolder.getUserInfo()
 
         return ProfileInquiryResDto(
             userId = userInfo.userId,
             name = userInfo.name,
             nickname = userInfo.nickname,
-            createdAt = userInfo.createdAt,
+            createdAt = userInfo.createdAt
+                ?: throw IllegalStateException("createdAt should not be null for persisted entity"),
         )
     }
 }

@@ -2,7 +2,7 @@ package com.sggnology.server.feature.activity_log.inquiry.data.dto.res
 
 import com.sggnology.server.db.sql.entity.ActivityLogInfo
 import com.sggnology.server.common.constants.ActivityLogType
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class ActivityLogResponseDto(
     val idx: Long,
@@ -12,18 +12,17 @@ data class ActivityLogResponseDto(
     val description: String,
     val targetId: String?,
     val ip: String?,
-    val createdAt: LocalDateTime
+    val createdAt: Instant
 ) {
     companion object {
         fun from(entity: ActivityLogInfo) = ActivityLogResponseDto(
-            idx = entity.idx,
-            userId = entity.userId,
+            idx = entity.idx,            userId = entity.userId,
             username = entity.username,
             type = entity.type,
             description = entity.description,
             targetId = entity.targetId,
             ip = entity.ip,
-            createdAt = entity.createdAt
+            createdAt = entity.createdAt ?: throw IllegalStateException("createdAt should not be null for persisted entity")
         )
     }
 }

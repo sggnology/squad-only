@@ -1,7 +1,7 @@
 package com.sggnology.server.feature.admin.account.inquiry.data.dto.res
 
 import com.sggnology.server.db.sql.entity.UserInfo
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class AdminAccountInquiryResDto(
     val userId: String,
@@ -9,10 +9,9 @@ data class AdminAccountInquiryResDto(
     val isEnabled: Boolean,
     val isDeleted: Boolean,
     val roles: List<String>,
-    val createdAt: LocalDateTime,
-    val lastLoginAt: LocalDateTime?
-) {
-    companion object {
+    val createdAt: Instant,
+    val lastLoginAt: Instant?
+) {    companion object {
         fun fromUserInfo(userInfo: UserInfo): AdminAccountInquiryResDto {
             return AdminAccountInquiryResDto(
                 userId = userInfo.userId,
@@ -20,7 +19,7 @@ data class AdminAccountInquiryResDto(
                 isEnabled = userInfo.isEnabled,
                 isDeleted = userInfo.isDeleted,
                 roles = userInfo.getRoleList(),
-                createdAt = userInfo.createdAt,
+                createdAt = userInfo.createdAt ?: throw IllegalStateException("createdAt should not be null for persisted entity"),
                 lastLoginAt = userInfo.lastLoginAt
             )
         }

@@ -2,7 +2,7 @@ package com.sggnology.server.db.sql.entity
 
 import com.sggnology.server.db.sql.base.BaseTimeEntity
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Entity
 @Table(name = "user_info")
@@ -23,7 +23,8 @@ class UserInfo(
 
     var isDeleted: Boolean = false,
 
-    var lastLoginAt: LocalDateTime? = null,
+    @Column(columnDefinition = "TIMESTAMPTZ")
+    var lastLoginAt: Instant? = null,
 
     @OneToMany(mappedBy = "userInfo", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val userRoleInfos: MutableList<UserRoleInfo> = mutableListOf(),

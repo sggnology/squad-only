@@ -1,22 +1,22 @@
 package com.sggnology.server.feature.auth.service
 
 import com.sggnology.server.common.util.ClientIPHolder
+import com.sggnology.server.common.util.JwtTokenUtil
+import com.sggnology.server.common.util.TimeUtil
 import com.sggnology.server.db.sql.entity.UserInfo
 import com.sggnology.server.db.sql.repository.UserInfoRepository
 import com.sggnology.server.feature.activity_log.handler.event.LoginLogEvent
 import com.sggnology.server.feature.auth.data.dto.res.AuthIdentificationMeResDto
-import com.sggnology.server.feature.auth.data.model.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.dto.res.AuthLoginResDto
+import com.sggnology.server.feature.auth.data.model.AuthIdentifyMeModel
 import com.sggnology.server.feature.auth.data.model.AuthLoginModel
 import com.sggnology.server.security.JwtTokenProvider
-import com.sggnology.server.common.util.JwtTokenUtil
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class AuthService(
@@ -50,11 +50,11 @@ class AuthService(
         validateUserCredentials(actualPassword, userInfo)
 
         val authorities = userInfo.getRoleList().map { SimpleGrantedAuthority(it) }
-
+        
         val token = jwtTokenProvider.createToken(userInfo.userId, authorities)
         userInfoRepository.save(
             userInfo.apply {
-                lastLoginAt = LocalDateTime.now()
+                lastLoginAt = TimeUtil.nowUtc()
             }
         )
 

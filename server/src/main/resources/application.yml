@@ -4,14 +4,21 @@ spring:
       enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:23306/squad_only
+    url: jdbc:postgresql://localhost:23306/squad_only?serverTimezone=UTC
     username: postgres
     password: root
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
   jpa:
     # data.sql 실행 활성화 (Spring Boot 2.5 이상 필요)
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update # 테이블이 없으면 생성하고, 변경사항이 있으면 업데이트
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        time_zone: UTC
 #    show-sql: true
 #    properties:
 #      hibernate:
@@ -19,6 +26,12 @@ spring:
   sql:
     init:
       mode: always
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      write-durations-as-timestamps: false
+    time-zone: UTC
+    date-format: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
   servlet:
     multipart:
