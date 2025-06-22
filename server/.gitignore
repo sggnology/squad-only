@@ -47,3 +47,4 @@ out/
 /commands/windows/postgres-data/
 /commands/windows/uploads/
 /commands/windows/docker-compose.yml
+/postgres-data/pg_stat/pgstat.stat
