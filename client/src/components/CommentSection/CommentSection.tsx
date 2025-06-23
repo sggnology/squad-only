@@ -26,7 +26,7 @@ import {
 } from '@mui/icons-material';
 import { Comment, CommentResponseData, PageComment, CommentRegistrationRequest, CommentUpdateRequest } from '../../types/comment';
 import { useAppSelector } from '../../store/hooks';
-import { formatDateTime } from '../../utils/DateUtil';
+import { RelativeTime } from '../TimeComponents';
 import axiosInstance from '../../utils/axiosInstance';
 
 interface CommentSectionProps {
@@ -61,13 +61,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
           page: pageNum,
           size: 10
         }
-      });
-
-      const newComments = response.data.content.map((item: CommentResponseData): Comment => ({
-        ...item,
-        createdAt: formatDateTime(item.createdAt),
-        updatedAt: formatDateTime(item.updatedAt)
-      }));
+      }); 
+      
+      const newComments: CommentResponseData[] = response.data.content;
 
       if (append) {
         setComments(prev => [...prev, ...newComments]);
@@ -124,9 +120,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
       await axiosInstance.put(`/comment/${commentId}`, requestData);
 
       // 댓글 목록 업데이트
-      setComments(prev => prev.map(comment => 
-        comment.idx === commentId 
-          ? { ...comment, comment: editingComment.trim(), updatedAt: formatDateTime(new Date().toISOString()) }
+      setComments(prev => prev.map(comment =>
+        comment.idx === commentId
+          ? { ...comment, comment: editingComment.trim(), updatedAt: new Date().toISOString() }
           : comment
       ));
 
@@ -254,13 +250,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mr: 1 }}>
                         {comment.username}
-                      </Typography>
+                      </Typography>                      
                       <Typography variant="caption" color="text.secondary">
-                        {comment.createdAt}
+                        <RelativeTime isoString={comment.createdAt} />
                         {comment.updatedAt !== comment.createdAt && ' (수정됨)'}
                       </Typography>
                       {/* 내가 작성한 댓글인 경우 메뉴 표시 */}
-                        {(user && (user.userId === comment.userId || user.roles?.includes('ROLE_ADMIN'))) && (
+                      {(user && (user.userId === comment.userId || user.roles?.includes('ROLE_ADMIN'))) && (
                         <IconButton
                           size="small"
                           sx={{ ml: 'auto' }}
@@ -268,7 +264,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ contentIdx }) =>
                         >
                           <MoreVertIcon fontSize="small" />
                         </IconButton>
-                        )}
+                      )}
                     </Box>
                     {/* 댓글 내용 또는 수정 필드 */}
                     {editingCommentId === comment.idx ? (

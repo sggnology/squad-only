@@ -15,6 +15,7 @@ import {
   Comment as CommentIcon,
 } from '@mui/icons-material';
 import { Content } from '../../types/content';
+import { RelativeTime } from '../TimeComponents';
 
 interface ContentCardProps {
   content: Content;
@@ -128,11 +129,11 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               {content.registeredUsername}
             </Typography>
           </Box>
-        )}        
+        )}          
         {/* 등록일과 댓글 수 */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-            {content.createdAt}
+            <RelativeTime isoString={content.createdAt} />
           </Typography>
           {content.commentCount != undefined && content.commentCount > 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

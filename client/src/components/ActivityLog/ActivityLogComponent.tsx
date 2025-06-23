@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
 import { ActivityLogResponse, ActivityLogItem, ACTIVITY_LOG_LABELS, ACTIVITY_LOG_COLORS, ACTIVITY_LOG_TYPE } from '../../types/activityLog';
+import { RelativeTime } from '../TimeComponents';
 
 const ACTIVITY_ICONS: Record<ACTIVITY_LOG_TYPE, React.ReactElement> = {
   LOGIN: <LoginIcon />,
@@ -80,36 +81,8 @@ function ActivityLogComponent({ userId, showUserId = false, pageSize = 15 }: Act
       setLoading(false);
     }
   };
-
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     fetchActivityLogs(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
-
-    if (diffInMinutes < 1) {
-      return '방금 전';
-    } else if (diffInMinutes < 60) {
-      return `${diffInMinutes}분 전`;
-    } else if (diffInHours < 24) {
-      return `${diffInHours}시간 전`;
-    } else if (diffInDays < 7) {
-      return `${diffInDays}일 전`;
-    } else {
-      return date.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
   };
 
   if (loading && logs.length === 0) {
@@ -164,9 +137,9 @@ function ActivityLogComponent({ userId, showUserId = false, pageSize = 15 }: Act
                       variant="outlined"
                       color="info"
                     />
-                  )}
+                  )}                  
                   <Typography variant="body2" color="text.secondary">
-                    {formatDate(log.createdAt)}
+                    <RelativeTime isoString={log.createdAt} />
                   </Typography>
                 </Box>
               }

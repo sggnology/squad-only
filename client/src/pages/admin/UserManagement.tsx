@@ -29,7 +29,7 @@ import {
   ToggleOn as ToggleOnIcon
 } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
-import { formatDateTime } from '../../utils/DateUtil';
+import { AbsoluteTime } from '../../components/TimeComponents';
 
 interface UserData {
   userId: string;
@@ -229,9 +229,13 @@ function UserManagement() {
                         color={user.isDeleted ? 'error' : (user.isEnabled ? 'success' : 'default')}
                         size="small"
                       />
+                    </TableCell>                    
+                    <TableCell>
+                      <AbsoluteTime isoString={user.createdAt} />
                     </TableCell>
-                    <TableCell>{formatDateTime(user.createdAt)}</TableCell>
-                    <TableCell>{user.lastLoginAt ? formatDateTime(user.lastLoginAt) : '-'}</TableCell>
+                    <TableCell>
+                      {user.lastLoginAt ? <AbsoluteTime isoString={user.lastLoginAt} /> : '-'}
+                    </TableCell>
                     <TableCell align="center">
                       {/* 삭제된 사용자는 작업 버튼을 표시하지 않음 */}
                       {!user.isDeleted && !user.roles.includes('ROLE_ADMIN') && (

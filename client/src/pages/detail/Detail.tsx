@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
-import { formatDateTime } from '../../utils/DateUtil';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import {
@@ -26,6 +25,7 @@ import {
 import { selectAuth } from '../../store/authSlice';
 import LocationMap from '../../components/LocationMap';
 import { CommentSection } from '../../components/CommentSection/CommentSection';
+import { SmartTime } from '../../components/TimeComponents';
 
 export interface ContentResponseData {
   idx: number;
@@ -98,7 +98,7 @@ function Detail() {
           tags: responseData.tags,
           location: responseData.location,
           description: responseData.description,
-          createdAt: formatDateTime(responseData.createdAt),
+          createdAt: responseData.createdAt,
           registeredUserId: responseData.registeredUserId,
           registeredUsername: responseData.registeredUsername || 'Unknown',
         };
@@ -200,9 +200,9 @@ function Detail() {
                 <Box>
                   <Typography variant="subtitle2" color="text.secondary">
                     등록일
-                  </Typography>
+                  </Typography>                  
                   <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                    {content.createdAt}
+                    <SmartTime isoString={content.createdAt} />
                   </Typography>
                 </Box>
               </Box>

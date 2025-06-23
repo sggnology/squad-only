@@ -1,5 +1,4 @@
 // Content 관련 타입 정의
-import { formatDateTime } from '../utils/DateUtil';
 
 // API 응답 데이터 타입
 export interface ContentResponseData {
@@ -69,6 +68,6 @@ export const convertToContent = (item: ContentResponseData): Content => ({
   tags: item.tags,
   registeredUsername: item.registeredUsername || 'Unknown',
   location: item.location,
-  createdAt: formatDateTime(item.createdAt), // formatDateTime 적용
+  createdAt: item.createdAt, // ISO8601 문자열 그대로 사용
   commentCount: item.commentCount || 0, // commentCount 추가
 });

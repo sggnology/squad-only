@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import './styles/timeDisplay.css';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import { ErrorProvider } from './contexts/ErrorContext.tsx';
