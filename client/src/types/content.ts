@@ -1,7 +1,7 @@
 // Content 관련 타입 정의
 
 // API 응답 데이터 타입
-export interface ContentResponseData {
+export interface ContentsResponseData {
   idx: number;
   fileIds: number[];
   title: string;
@@ -13,7 +13,7 @@ export interface ContentResponseData {
 }
 
 // 클라이언트에서 사용하는 Content 타입
-export interface Content {
+export interface Contents {
   idx: number;
   imageUrl: string;
   title: string;
@@ -34,7 +34,7 @@ export interface PageInfo {
 
 // API 응답 타입 (페이지네이션 포함)
 export interface PageContent {
-  content: ContentResponseData[];
+  content: ContentsResponseData[];
   page: PageInfo;
 }
 
@@ -59,7 +59,7 @@ export interface ContentApiParams {
 }
 
 // Content 변환 유틸리티 함수
-export const convertToContent = (item: ContentResponseData): Content => ({
+export const convertToContent = (item: ContentsResponseData): Contents => ({
   idx: item.idx,
   imageUrl: item.fileIds && item.fileIds.length > 0 
     ? `/api/v1/file/${item.fileIds[0]}` 

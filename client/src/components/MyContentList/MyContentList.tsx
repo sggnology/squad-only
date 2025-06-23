@@ -3,8 +3,8 @@ import { useAppSelector } from '../../store/hooks';
 import { selectUser } from '../../store/authSlice';
 import axiosInstance from '../../utils/axiosInstance';
 import { 
-  Content, 
-  ContentResponseData, 
+  Contents, 
+  ContentsResponseData, 
   PageContent, 
   ContentApiParams,
   convertToContent 
@@ -14,7 +14,7 @@ import { ContentGrid } from '../ContentGrid/ContentGrid';
 export const MyContentList: React.FC = () => {
   const currentUser = useAppSelector(selectUser);
   
-  const [content, setContent] = useState<Content[]>([]);
+  const [content, setContent] = useState<Contents[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [last, setLast] = useState(false);
@@ -54,7 +54,7 @@ export const MyContentList: React.FC = () => {
       
       const responseData = res.data.content;
       const responsePage = res.data.page;      
-      const newContent: Content[] = responseData.map((item: ContentResponseData) => convertToContent(item));
+      const newContent: Contents[] = responseData.map((item: ContentsResponseData) => convertToContent(item));
 
       const isLast = responsePage.number === responsePage.totalPages - 1;
       setContent((prev) => [...prev, ...newContent]);

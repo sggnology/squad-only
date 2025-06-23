@@ -22,8 +22,8 @@ import {
 // Import the new axiosInstance
 import axiosInstance from '../../utils/axiosInstance';
 import { 
-  ContentResponseData, 
-  Content,
+  ContentsResponseData, 
+  Contents,
   PageContent, 
   TagPageContent,
   ContentApiParams,
@@ -32,7 +32,7 @@ import {
 import { ContentGrid } from '../../components/ContentGrid/ContentGrid';
 
 function Home() {
-  const [content, setContent] = useState<Content[]>([]);
+  const [content, setContent] = useState<Contents[]>([]);
   const [page, setPage] = useState(0); // Spring pageable starts at 0
   const [loading, setLoading] = useState(false);
   const [last, setLast] = useState(false); // Track if last page
@@ -123,7 +123,7 @@ function Home() {
 
         const responseData = res.data.content;
         const responsePage = res.data.page;        
-        const newContent: Content[] = responseData.map((item: ContentResponseData) => convertToContent(item));
+        const newContent: Contents[] = responseData.map((item: ContentsResponseData) => convertToContent(item));
 
         const isLast = responsePage.number === responsePage.totalPages - 1;
         setContent((prev) => [...prev, ...newContent]);

@@ -8,11 +8,11 @@ import {
   Alert
 } from '@mui/material';
 import { Clear as ClearIcon } from '@mui/icons-material';
-import { Content } from '../../types/content';
+import { Contents } from '../../types/content';
 import { ContentCard } from '../ContentCard/ContentCard';
 
 interface ContentGridProps {
-  content: Content[];
+  content: Contents[];
   loading: boolean;
   last: boolean;
   error: string | null;

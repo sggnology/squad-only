@@ -14,11 +14,11 @@ import {
   LocationOn as LocationIcon,
   Comment as CommentIcon,
 } from '@mui/icons-material';
-import { Content } from '../../types/content';
+import { Contents } from '../../types/content';
 import { RelativeTime } from '../TimeComponents';
 
 interface ContentCardProps {
-  content: Content;
+  content: Contents;
   onTagClick?: (tag: string) => void;
   showUsername?: boolean;
 }
