@@ -19,7 +19,7 @@ import { Save as SaveIcon, Cancel as CancelIcon, Delete as DeleteIcon } from '@m
 import axiosInstance from '../../utils/axiosInstance';
 import { useAppSelector } from '../../store/hooks';
 import AddressSearch from '../../components/AddressSearch';
-import { ContentResponseData } from './Detail';
+import { ContentDetailResponseData } from '../../types/contentDetail';
 
 const EditContent: React.FC = () => {
   const { idx } = useParams<{ idx: string }>();
@@ -54,7 +54,7 @@ const EditContent: React.FC = () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(`/content/${idx}`);
-      const contentResponseData = response.data as ContentResponseData;
+      const contentResponseData = response.data as ContentDetailResponseData;
 
       // 편집 권한 확인
       if (!canEditContent(contentResponseData)) {
@@ -79,7 +79,7 @@ const EditContent: React.FC = () => {
     }
   };
 
-  const canEditContent = (contentResponseData: ContentResponseData): boolean => {
+  const canEditContent = (contentResponseData: ContentDetailResponseData): boolean => {
     if (!user) return false;
 
     // 관리자는 모든 컨텐츠 편집 가능

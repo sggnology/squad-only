@@ -26,36 +26,12 @@ import { selectAuth } from '../../store/authSlice';
 import LocationMap from '../../components/LocationMap';
 import { CommentSection } from '../../components/CommentSection/CommentSection';
 import { SmartTime } from '../../components/TimeComponents';
-
-export interface ContentResponseData {
-  idx: number;
-  fileIds: number[];
-  title: string;
-  tags: string[];
-  location: string;
-  description: string;
-  createdAt: string;
-  registeredUserId: string | null;
-  registeredUsername: string | null;
-  commentCount: number | null;
-}
-
-interface Content {
-  idx: number;
-  imageUrl: string;
-  title: string;
-  tags: string[];
-  location: string;
-  description: string;
-  createdAt: string;
-  registeredUserId: string | null;
-  registeredUsername: string | null;
-}
+import { ContentDetail, ContentDetailResponseData } from '../../types/contentDetail';
 
 function Detail() {
   const { idx } = useParams<{ idx: string }>();
 
-  const [content, setContent] = useState<Content | null>(null);
+  const [content, setContent] = useState<ContentDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const fetchingRef = useRef(false); // 중복 요청 방지 플래그
 
@@ -87,11 +63,11 @@ function Detail() {
       fetchingRef.current = true;
       setLoading(true);
       try {
-        const res = await axiosInstance.get<ContentResponseData>(`/content/${idx}`);
+        const res = await axiosInstance.get<ContentDetailResponseData>(`/content/${idx}`);
 
         // Type assertion for Spring pageable response
         const responseData = res.data;
-        const content: Content = {
+        const content: ContentDetail = {
           idx: responseData.idx,
           imageUrl: responseData.fileIds && responseData.fileIds.length > 0 ? `/api/v1/file/${responseData.fileIds[0]}` : 'https://placehold.co/400', // Fallback image URL
           title: responseData.title,
