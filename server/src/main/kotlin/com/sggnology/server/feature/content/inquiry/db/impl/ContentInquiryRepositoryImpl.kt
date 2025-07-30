@@ -70,7 +70,7 @@ class ContentInquiryRepositoryImpl(
             .leftJoin(contentInfo.registeredUser).fetchJoin()
             .leftJoin(contentInfo.contentTags).fetchJoin()
             .leftJoin(contentInfo.comments).fetchJoin() // 댓글 수를 가져오기 위해 조인
-            .where(finalPredicate)
+            .where(contentInfo.idx.`in`(ids))
             .orderBy(
                 contentInfo.createdAt.desc(), contentInfo.idx.desc()
             )
