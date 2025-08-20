@@ -11,6 +11,7 @@ import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 
+// TODO: 인증된 사용자 정보를 획득하는 용도였으나, WithUseInfo 로 대체됨
 @Component
 class UserInfoArgumentResolver(
     private val userInfoRepository: UserInfoRepository
